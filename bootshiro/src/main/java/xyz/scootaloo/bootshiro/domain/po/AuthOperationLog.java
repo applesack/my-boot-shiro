@@ -1,4 +1,4 @@
-package xyz.scootaloo.bootshiro.domian.po;
+package xyz.scootaloo.bootshiro.domain.po;
 
 import lombok.Data;
 

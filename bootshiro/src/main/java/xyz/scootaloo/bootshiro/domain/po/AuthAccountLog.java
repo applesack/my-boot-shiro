@@ -1,4 +1,4 @@
-package xyz.scootaloo.bootshiro.domian.po;
+package xyz.scootaloo.bootshiro.domain.po;
 
 import lombok.Data;
 
@@ -20,5 +20,6 @@ public class AuthAccountLog {
     private Date   createTime;
     private Short  succeed;
     private String message;
+    private String ip;
 
 }
