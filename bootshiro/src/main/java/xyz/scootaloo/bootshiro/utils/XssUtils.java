@@ -36,8 +36,13 @@ public class XssUtils {
         return text;
     }
 
-    public static String stripSqlXss(String value) {
-        return stripXss(stripSqlInjection(value));
+    /**
+     * 过滤文本中的sql注入
+     * @param sql 待过滤的sql语句
+     * @return 过滤后的sql语句
+     */
+    public static String stripSqlXss(String sql) {
+        return stripXss(stripSqlInjection(sql));
     }
 
     /**
