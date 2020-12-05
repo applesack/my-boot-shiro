@@ -7,6 +7,29 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     platform: mysql
 
+  # 缓存设置
+  redis:
+    # 默认服务器索引
+    database: 0
+    # 默认服务器地址
+    host: 127.0.0.1
+    # 连接端口
+    port: 6379
+
+    jedis:
+      pool:
+        # 最大连接数
+        max-active: 800
+        # 最长等待时间
+        max-wait: 10000
+        # 连接池中最大空闲连接
+        max-idle: 20
+        # 连接池中最小空闲连接
+        min-idle: 2
+    timeout: 30000
+  cache:
+    type: redis
+
 # mybatis配置
 mybatis:
   # 指向实体类包路径
@@ -28,4 +51,5 @@ pagehelper:
 
 ########一些应用设置##########
 
-swagger-enable: true
+swagger.enable: true
+bootshiro.enableEncryptPassword: true

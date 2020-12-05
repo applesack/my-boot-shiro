@@ -20,6 +20,13 @@
 	</properties>
 
 	<dependencies>
+		<!-- redis -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<version>1.5.9.RELEASE</version>
+		</dependency>
+
 		<!--持久层框架-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
