@@ -67,7 +67,7 @@ public enum StatusCode {
     }
 
     /**
-     * 枚举类对象不用ResponseBody注解自动转换为json(转换的对象不包含枚举类除枚举属性之外的状态)，
+     * 枚举类对象不能用ResponseBody注解自动转换为json(转换的对象不包含枚举类除枚举属性之外的状态)，
      * 所以要把这个枚举类中的信息反馈给前端需要先转换成pojo类
      * @return 可被ResponseBody解析成带有状态的json
      */

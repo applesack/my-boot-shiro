@@ -1,16 +1,15 @@
 package xyz.scootaloo.bootshiro.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.dao.DataAccessException;
-import xyz.scootaloo.bootshiro.domain.po.AuthRoleResource;
+import xyz.scootaloo.bootshiro.domain.po.AuthUserRole;
 
 /**
  * @author : flutterdash@qq.com
- * @since : 2020年12月04日 9:46
+ * @since : 2020年12月06日 10:02
  */
 @Mapper
-public interface AuthRoleResourceMapper {
+public interface AuthUserRoleMapper {
 
     /**
      * description TODO
@@ -28,7 +27,7 @@ public interface AuthRoleResourceMapper {
      * @return int
      * @throws DataAccessException when
      */
-    int insert(AuthRoleResource record) throws DataAccessException;
+    int insert(AuthUserRole record) throws DataAccessException;
 
     /**
      * description TODO
@@ -37,16 +36,16 @@ public interface AuthRoleResourceMapper {
      * @return int
      * @throws DataAccessException when
      */
-    int insertSelective(AuthRoleResource record) throws DataAccessException;
+    int insertSelective(AuthUserRole record) throws DataAccessException;
 
     /**
      * description TODO
      *
      * @param id 1
-     * @return com.usthe.bootshiro.domain.bo.AuthRoleResource
+     * @return com.usthe.bootshiro.domain.bo.AuthUserRole
      * @throws DataAccessException when
      */
-    AuthRoleResource selectByPrimaryKey(Integer id) throws DataAccessException;
+    AuthUserRole selectByPrimaryKey(Integer id) throws DataAccessException;
 
     /**
      * description TODO
@@ -55,7 +54,7 @@ public interface AuthRoleResourceMapper {
      * @return int
      * @throws DataAccessException when
      */
-    int updateByPrimaryKeySelective(AuthRoleResource record) throws DataAccessException;
+    int updateByPrimaryKeySelective(AuthUserRole record) throws DataAccessException;
 
     /**
      * description TODO
@@ -64,16 +63,15 @@ public interface AuthRoleResourceMapper {
      * @return int
      * @throws DataAccessException when
      */
-    int updateByPrimaryKey(AuthRoleResource record) throws DataAccessException;
+    int updateByPrimaryKey(AuthUserRole record) throws DataAccessException;
 
     /**
      * description TODO
      *
-     * @param roleId 1
-     * @param resourceId 2
+     * @param record 1
      * @return int
      * @throws DataAccessException when
      */
-    int deleteByUniqueKey(@Param("roleId") Integer roleId, @Param("resourceId") Integer resourceId) throws DataAccessException;
+    int deleteByUniqueKey(AuthUserRole record) throws DataAccessException;
 
 }

@@ -63,8 +63,9 @@ public class Message {
     }
 
     // 设置数据
-    public Message setData(Map<String, Object> nDate) {
-        this.data = nDate;
+    public Message setData(Map<String, Object> nData) {
+        if (nData != null)
+            this.data = nData;
         return this;
     }
 

@@ -18,7 +18,7 @@ public interface AuthOperationLogMapper {
      *
      * @return java.util.List<com.usthe.bootshiro.domain.bo.AuthOperationLog>
      */
-    List<AuthOperationLog> select();
+    List<AuthOperationLog> selectOperationLogList();
 
     /**
      * description 插入资源相关操作日志
@@ -27,6 +27,6 @@ public interface AuthOperationLogMapper {
      * @return int
      * @throws DataAccessException when
      */
-    int insert(AuthOperationLog operationLog) throws DataAccessException;
+    int insertSelective(AuthOperationLog operationLog) throws DataAccessException;
 
 }
