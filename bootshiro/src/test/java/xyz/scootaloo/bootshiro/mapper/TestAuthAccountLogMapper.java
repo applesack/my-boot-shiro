@@ -30,7 +30,7 @@ public class TestAuthAccountLogMapper {
 
     @Test
     public void testSelect() {
-        List<AuthAccountLog> authAccountLogList = authAccountLogMapper.select();
+        List<AuthAccountLog> authAccountLogList = authAccountLogMapper.selectAccountLogList();
         System.out.println(authAccountLogList);
     }
 

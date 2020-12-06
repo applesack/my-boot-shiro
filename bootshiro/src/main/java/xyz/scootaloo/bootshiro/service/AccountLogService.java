@@ -9,10 +9,10 @@ import java.util.List;
 
 /**
  * @author : flutterdash@qq.com
- * @since : 2020年12月05日 15:44
+ * @since : 2020年12月06日 11:00
  */
 @Service
-public class AccountService {
+public class AccountLogService {
 
     private AuthAccountLogMapper accountLogMapper;
 

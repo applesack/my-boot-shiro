@@ -65,7 +65,7 @@
     </insert>
 
 
-    <select id="select" resultMap="BaseResultMap">
+    <select id="selectAccountLogList" resultMap="BaseResultMap">
         select * from auth_account_log order by create_time desc
     </select>
 
