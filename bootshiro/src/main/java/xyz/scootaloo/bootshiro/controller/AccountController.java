@@ -23,17 +23,13 @@ import java.util.Map;
 @RequestMapping("/account")
 public class AccountController extends BaseHttpServ {
 
-    // 一些字符串常量
+    // 一些常量
     private static final String APP_ID_STR = "appId";
+    private static final long REFRESH_PERIOD_TIME = 36000L;
 
-
-    @Autowired
+    // services
     private StringRedisTemplate redisTemplate;
-
-    @Autowired
     private AccountService accountService;
-
-    @Autowired
     private UserService userService;
 
     @Value("${bootshiro.enableEncryptPassword}")
@@ -45,8 +41,26 @@ public class AccountController extends BaseHttpServ {
         String appId = params.get(APP_ID_STR);
         if (appId == null)
             return Message.of(StatusCode.ERROR_JWT);
-//        String roles =
+        String roles = accountService.loadAccountRole(APP_ID_STR);
+        String jwt = null;
         return Message.success();
+    }
+
+    // setter
+
+    @Autowired
+    public void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
+    }
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Autowired
+    public void setRedisTemplate(StringRedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
 }

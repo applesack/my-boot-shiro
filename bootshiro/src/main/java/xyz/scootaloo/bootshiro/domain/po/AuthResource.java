@@ -14,7 +14,7 @@ public class AuthResource {
     private Integer id;
     private String  code;
     private String  name;
-    private String  parentId;
+    private Integer parentId;
     private String  uri;
     private Short   type;
     private String  method;

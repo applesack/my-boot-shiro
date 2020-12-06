@@ -82,6 +82,9 @@ public class XssUtils {
         return SQL_FILTER.matcher(sql).replaceAll("");
     }
 
+    private XssUtils() {
+    }
+
     // 测试
     public static void main(String[] args) {
         String[] texts = {

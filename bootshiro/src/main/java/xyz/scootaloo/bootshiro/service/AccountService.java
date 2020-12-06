@@ -1,11 +1,11 @@
 package xyz.scootaloo.bootshiro.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import xyz.scootaloo.bootshiro.domain.po.AuthAccountLog;
-import xyz.scootaloo.bootshiro.mapper.AuthAccountLogMapper;
-
-import java.util.List;
+import xyz.scootaloo.bootshiro.domain.bo.Account;
+import xyz.scootaloo.bootshiro.domain.po.AuthUser;
+import xyz.scootaloo.bootshiro.mapper.AuthUserMapper;
 
 /**
  * @author : flutterdash@qq.com
@@ -14,17 +14,41 @@ import java.util.List;
 @Service
 public class AccountService {
 
-    private AuthAccountLogMapper accountLogMapper;
+    private AuthUserMapper userMapper;
+    private UserService userService;
 
-    public List<AuthAccountLog> getAccountLogList() {
-        return accountLogMapper.selectAccountLogList();
+    public Account loadAccount(String appId) throws DataAccessException {
+        AuthUser user = userMapper.selectByUniqueKey(appId);
+        return user != null ? new Account(user.getUsername(),user.getPassword(),user.getSalt()) : null;
+    }
+
+    public boolean isAccountExistByUid(String uid) {
+        AuthUser user = userMapper.selectByPrimaryKey(uid);
+        return user != null ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    public boolean registerAccount(AuthUser account) throws DataAccessException {
+        // 给新用户授权访客角色
+        userService.authorityUserRole(account.getUid(),103);
+
+        return userMapper.insertSelective(account) ==1 ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    public String loadAccountRole(String appId) throws DataAccessException {
+
+        return userMapper.selectUserRoles(appId);
     }
 
     // setter
 
     @Autowired
-    public void setAccountLogMapper(AuthAccountLogMapper accountLogMapper) {
-        this.accountLogMapper = accountLogMapper;
+    public void setUserMapper(AuthUserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
 }
