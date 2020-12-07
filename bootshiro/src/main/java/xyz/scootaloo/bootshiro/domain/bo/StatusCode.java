@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 public enum StatusCode {
 
     // 基础请求状态信息
-    SUCCESS(6666, Boolean.TRUE , "成功的请求"),
+    SUCCESS(6666, Boolean.TRUE , "成功请求"),
     FAILURE(1111, Boolean.FALSE, "请求失败"),
 
     // 认证授权相关
@@ -34,7 +34,9 @@ public enum StatusCode {
 
     // 用户相关
     LACK_ACCOUNT_INFO(2001, Boolean.FALSE, "注册账户信息不完善"),
-    REGISTER_SUCCESS (2002, Boolean.TRUE , "注册用户成功");
+    REGISTER_SUCCESS (2002, Boolean.TRUE , "注册用户成功"),
+    ACCOUNT_EXIST    (2003, Boolean.FALSE, "账号已存在"),
+    REGISTER_FAILURE (2004, Boolean.FALSE, "注册失败");
 
     // 业务类状态码 3000+ ... ...
 
@@ -67,9 +69,9 @@ public enum StatusCode {
     }
 
     /**
-     * 枚举类对象不能用ResponseBody注解自动转换为json(转换的对象不包含枚举类除枚举属性之外的状态)，
+     * 枚举类对象不能用@ResponseBody注解自动转换为json(转换的对象不包含枚举类除枚举属性之外的状态)，
      * 所以要把这个枚举类中的信息反馈给前端需要先转换成pojo类
-     * @return 可被ResponseBody解析成带有状态的json
+     * @return 可被@ResponseBody解析成带有状态的json
      */
     public StatusCodeObject toMap() {
         return new StatusCodeObject(this);

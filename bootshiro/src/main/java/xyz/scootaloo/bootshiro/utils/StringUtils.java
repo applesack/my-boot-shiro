@@ -1,15 +1,17 @@
 package xyz.scootaloo.bootshiro.utils;
 
+import org.springframework.lang.Nullable;
 import xyz.scootaloo.bootshiro.support.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 字符串工具
  * @author : flutterdash@qq.com
  * @since : 2020年12月06日 20:18
  */
-public class StringUtils {
+public class StringUtils extends org.springframework.util.StringUtils {
 
     public static List<String> splitBy(String line, char point) {
         Assert.notNull(line, "被分隔的字符串不能为空");
@@ -43,8 +45,12 @@ public class StringUtils {
         return false;
     }
 
-    private static boolean hasLength(CharSequence str) {
+    public static boolean hasLength(CharSequence str) {
         return (str != null && str.length() > 0);
+    }
+
+    public static boolean isEmpty(@Nullable Object str) {
+        return str == null || "".equals(str);
     }
 
     private StringUtils() {

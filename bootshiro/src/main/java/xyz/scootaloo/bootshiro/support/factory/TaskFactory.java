@@ -23,9 +23,15 @@ public class TaskFactory {
     private static AuthAccountLogMapper accountLogMapper;
 
     public static TimerTask loginLog(String userId, String ip, Short succeed, String message) {
-        return new TimerTaskImpl(() -> {
-            accountLogMapper.insertSelective(LogObjectFactory.createAccountLog(userId, "用户登陆日志", ip, succeed, message));
-        });
+        return new TimerTaskImpl(() -> accountLogMapper
+                .insertSelective(LogObjectFactory
+                        .createAccountLog(userId, "用户登陆日志", ip, succeed, message)));
+    }
+
+    public static TimerTask registerLog(String userId, String ip, Short succeed, String message) {
+        return new TimerTaskImpl(() -> accountLogMapper
+                .insertSelective(LogObjectFactory
+                        .createAccountLog(userId, "用户注册日志", ip, succeed, message)));
     }
 
     public TaskFactory() {

@@ -28,6 +28,7 @@ public class IpUtils {
 
     /**
      * 获取request对象的真实ip
+     * <a href="https://www.jianshu.com/p/15f3498a7fad">HTTP 请求头中的 X-Forwarded-For</a>
      * @param request 请求
      * @return 真实ip
      */

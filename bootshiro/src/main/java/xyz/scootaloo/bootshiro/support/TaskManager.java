@@ -7,6 +7,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 任务管理器，一般用于存储日志
+ * 任务在线程池中执行，不影响主业务效率
  * @author : flutterdash@qq.com
  * @since : 2020年12月07日 10:35
  */
@@ -19,7 +21,7 @@ public class TaskManager {
     private final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(20);
 
     /**
-     * 提交一个任务
+     * 向线程池中提交一个任务
      * @param timerTask 被提交的任务
      */
     public void executeTask(TimerTask timerTask) {
