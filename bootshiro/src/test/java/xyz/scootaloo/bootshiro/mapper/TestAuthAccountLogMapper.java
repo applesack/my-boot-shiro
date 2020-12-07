@@ -25,7 +25,7 @@ public class TestAuthAccountLogMapper {
         AuthAccountLog authAccountLog = new AuthAccountLog();
         authAccountLog.setCreateTime(new Date(2010, Calendar.DECEMBER, 6));
         authAccountLog.setUserId("ws");
-        authAccountLogMapper.insert(authAccountLog);
+        authAccountLogMapper.insertSelective(authAccountLog);
     }
 
     @Test
