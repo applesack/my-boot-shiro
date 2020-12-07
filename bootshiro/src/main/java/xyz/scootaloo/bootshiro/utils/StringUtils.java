@@ -30,6 +30,23 @@ public class StringUtils {
         return segments;
     }
 
+    public static boolean hasText(CharSequence text) {
+        if (!hasLength(text)) {
+            return false;
+        }
+        int strLen = text.length();
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(text.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasLength(CharSequence str) {
+        return (str != null && str.length() > 0);
+    }
+
     private StringUtils() {
     }
 

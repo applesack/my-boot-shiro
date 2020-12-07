@@ -15,6 +15,6 @@ public interface AuthAccountLogMapper {
 
     List<AuthAccountLog> selectAccountLogList();
 
-    int insert(AuthAccountLog authAccountLog) throws DataAccessException;
+    int insertSelective(AuthAccountLog authAccountLog) throws DataAccessException;
 
 }

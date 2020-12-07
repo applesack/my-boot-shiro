@@ -1,6 +1,6 @@
 package xyz.scootaloo.bootshiro.support;
 
-import io.jsonwebtoken.lang.Strings;
+import xyz.scootaloo.bootshiro.utils.StringUtils;
 
 /**
  * 用于断言
@@ -23,7 +23,7 @@ public class Assert {
     }
 
     public static void hasText(CharSequence line, String message) {
-        if (!Strings.hasText(line)) {
+        if (!StringUtils.hasText(line)) {
             throw new IllegalArgumentException(message);
         }
     }

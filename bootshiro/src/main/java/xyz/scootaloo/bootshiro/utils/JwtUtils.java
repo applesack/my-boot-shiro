@@ -6,6 +6,7 @@ import io.jsonwebtoken.impl.DefaultHeader;
 import io.jsonwebtoken.impl.DefaultJwsHeader;
 import io.jsonwebtoken.impl.TextCodec;
 import io.jsonwebtoken.impl.compression.DefaultCompressionCodecResolver;
+import xyz.scootaloo.bootshiro.domain.dto.JwtAccount;
 import xyz.scootaloo.bootshiro.support.Assert;
 
 import javax.xml.bind.DatatypeConverter;
@@ -24,7 +25,7 @@ import java.util.Map;
 public class JwtUtils {
 
     // 密钥， json->javaObject， 加密解密器
-    public static final String SECRET_KEY = "?::4343fdf4fdf6cvf):";
+    private static final String SECRET_KEY = "?::4343fdf4fdf6cvf):";
     private static final ObjectMapper CONVERTER = new ObjectMapper();
     private static final CompressionCodecResolver codecResolver = new DefaultCompressionCodecResolver();
 
@@ -70,6 +71,10 @@ public class JwtUtils {
                 .compressWith(DEFAULT_COMPRESSION)
                 .signWith(dvBuilder.algorithm, SECRECY_KEY_BYTES)
                 .compact();
+    }
+
+    public static JwtAccount parseJwt(String jwtString) {
+        return null;
     }
 
     public static String parseJwtPayload(String jwt) {
@@ -118,15 +123,6 @@ public class JwtUtils {
         }
     }
 
-    /**
-     * 获取当前时间的Date对象
-     * @return java.util.Date
-     */
-    public static Date getDateOfCurrentTimeMillis() {
-        return getDateOfCurrentTimeMillis(System.currentTimeMillis());
-    }
-
-    // 同上
     private static Date getDateOfCurrentTimeMillis(long currentTimeMillis) {
         return new Date(currentTimeMillis);
     }
@@ -135,13 +131,9 @@ public class JwtUtils {
      * 生成一个过期时间，标识一段时间后的时间点的Date对象。
      * 过期时间 = 当前时间 + 一段时间(period 单位毫秒)。
      * @param period period毫秒后的日期对象
+     * @param currentTimeMillis System.currentTimeMillis() 获取
      * @return java.util.Date
      */
-    public static Date expirationOf(long period) {
-        return expirationOf(period, System.currentTimeMillis());
-    }
-
-    // 同上
     private static Date expirationOf(long period, long currentTimeMillis) {
         return new Date(currentTimeMillis + (period * 1000));
     }

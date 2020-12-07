@@ -19,7 +19,7 @@
 
 
     <!--将一条身份账号日志插入到记录-->
-    <insert id="insert" keyColumn="ID" keyProperty="id"
+    <insert id="insertSelective" keyColumn="ID" keyProperty="id"
             parameterType="xyz.scootaloo.bootshiro.domain.po.AuthAccountLog" useGeneratedKeys="true">
         insert into auth_account_log
         <trim prefix="(" suffix=")" suffixOverrides=",">
