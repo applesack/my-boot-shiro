@@ -44,7 +44,7 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        Subject subject = getSubject(request, response);
+        Subject subject = getSubject();
 
         //记录调用api日志到数据库
         taskManager.executeTask(TaskFactory.businessLog(WebUtils.toHttp(request).getHeader("appId"),
@@ -75,7 +75,7 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) {
-        Subject subject = getSubject(request, response);
+        Subject subject = getSubject();
 
         // 未认证的情况上面已经处理  这里处理未授权
         if (subject != null && subject.isAuthenticated()){

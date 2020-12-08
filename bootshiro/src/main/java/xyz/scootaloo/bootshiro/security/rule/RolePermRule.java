@@ -14,14 +14,8 @@ public class RolePermRule implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final String ANON_ROLE = "role_anon";
 
-    /**
-     * 资源URL
-     */
-    private String url;
-    /**
-     * 访问资源所需要的角色列表，多个列表用逗号间隔
-     */
-    private String needRoles;
+    private String url;       // 资源url
+    private String needRoles; // 访问资源所需要的角色列表，多个列表用逗号间隔
 
     public String getUrl() {
         return url;

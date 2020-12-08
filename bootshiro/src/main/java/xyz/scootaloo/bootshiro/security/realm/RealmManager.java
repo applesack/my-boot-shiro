@@ -20,16 +20,9 @@ import java.util.List;
 @Component
 public class RealmManager {
 
-    private final JwtMatcher jwtMatcher;
-    private final PasswordMatcher passwordMatcher;
-    private final AccountProvider accountProvider;
-
-    @Autowired // 构造器注入
-    public RealmManager(AccountProvider accountProvider,PasswordMatcher passwordMatcher,JwtMatcher jwtMatcher) {
-        this.accountProvider = accountProvider;
-        this.passwordMatcher = passwordMatcher;
-        this.jwtMatcher = jwtMatcher;
-    }
+    private JwtMatcher jwtMatcher;
+    private PasswordMatcher passwordMatcher;
+    private AccountProvider accountProvider;
 
     public List<Realm> initGetRealm() {
         List<Realm> realmList = new LinkedList<>();
@@ -45,6 +38,26 @@ public class RealmManager {
         jwtRealm.setAuthenticationTokenClass(JwtToken.class);
         realmList.add(jwtRealm);
         return Collections.unmodifiableList(realmList);
+    }
+
+    public RealmManager() {
+    }
+
+    // setter
+
+    @Autowired
+    public void setJwtMatcher(JwtMatcher jwtMatcher) {
+        this.jwtMatcher = jwtMatcher;
+    }
+
+    @Autowired
+    public void setPasswordMatcher(PasswordMatcher passwordMatcher) {
+        this.passwordMatcher = passwordMatcher;
+    }
+
+    @Autowired
+    public void setAccountProvider(AccountProvider accountProvider) {
+        this.accountProvider = accountProvider;
     }
 
 }

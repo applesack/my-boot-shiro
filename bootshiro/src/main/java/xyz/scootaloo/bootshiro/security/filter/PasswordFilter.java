@@ -7,6 +7,7 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import xyz.scootaloo.bootshiro.domain.bo.Message;
@@ -31,9 +32,9 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class PasswordFilter extends AccessControlFilter {
 
-    private StringRedisTemplate redisTemplate;
-
+    @Value("${bootshiro.enableEncryptPassword}")
     private boolean isEncryptPassword;
+    private StringRedisTemplate redisTemplate;
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
@@ -158,14 +159,13 @@ public class PasswordFilter extends AccessControlFilter {
         }
         return new PasswordToken(appId,password,timestamp,host);
     }
-    @Autowired
-    public void setRedisTemplate(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
+
+    public PasswordFilter() {
     }
 
     @Autowired
-    public void setEncryptPassword(boolean encryptPassword) {
-        isEncryptPassword = encryptPassword;
+    public void setRedisTemplate(StringRedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
 }

@@ -14,6 +14,7 @@ import xyz.scootaloo.bootshiro.security.realm.AonModularRealmAuthenticator;
 import xyz.scootaloo.bootshiro.security.realm.RealmManager;
 
 /**
+ * Shiro配置类
  * @author : flutterdash@qq.com
  * @since : 2020年12月08日 10:02
  */
@@ -21,8 +22,9 @@ import xyz.scootaloo.bootshiro.security.realm.RealmManager;
 public class ShiroConfig {
 
     @Bean
-    public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager, ShiroFilterChainManager filterChainManager) {
-        RestShiroFilterFactoryBean shiroFilterFactoryBean = new RestShiroFilterFactoryBean();
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager,
+                                                         ShiroFilterChainManager filterChainManager,
+                                                         RestShiroFilterFactoryBean shiroFilterFactoryBean) {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         shiroFilterFactoryBean.setFilters(filterChainManager.initGetFilters());
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainManager.initGetFilterChain());
@@ -36,7 +38,9 @@ public class ShiroConfig {
         securityManager.setRealms(realmManager.initGetRealm());
 
         // 无状态subjectFactory设置
-        DefaultSessionStorageEvaluator evaluator = (DefaultSessionStorageEvaluator)((DefaultSubjectDAO) securityManager.getSubjectDAO()).getSessionStorageEvaluator();
+        DefaultSessionStorageEvaluator evaluator
+                = (DefaultSessionStorageEvaluator) ((DefaultSubjectDAO) securityManager
+                .getSubjectDAO()).getSessionStorageEvaluator();
         evaluator.setSessionStorageEnabled(Boolean.FALSE);
         StatelessWebSubjectFactory subjectFactory = new StatelessWebSubjectFactory();
         securityManager.setSubjectFactory(subjectFactory);

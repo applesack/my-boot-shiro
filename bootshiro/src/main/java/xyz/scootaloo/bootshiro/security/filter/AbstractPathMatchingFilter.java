@@ -48,7 +48,7 @@ public abstract class AbstractPathMatchingFilter extends PathMatchingFilter {
     }
 
 
-    protected Subject getSubject(ServletRequest request, ServletResponse response) {
+    protected Subject getSubject() {
         return SecurityUtils.getSubject();
     }
 

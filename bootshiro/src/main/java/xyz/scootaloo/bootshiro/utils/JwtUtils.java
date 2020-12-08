@@ -18,12 +18,11 @@ import java.util.Map;
 /**
  * jwt工具
  * 用于 签发，解析，验证
- *
+ * -----------------
  * @author : flutterdash@qq.com
  * @since : 2020年12月06日 14:21
  */
 public class JwtUtils {
-
     // 密钥， json->javaObject， 加密解密器
     public static final String SECRET_KEY = "?::4343fdf4fdf6cvf):";
     private static final ObjectMapper CONVERTER = new ObjectMapper();
@@ -76,7 +75,6 @@ public class JwtUtils {
     public static JwtAccount parseJwt(String jwt, String appKey)
             throws ExpiredJwtException, UnsupportedJwtException,
                     MalformedJwtException, SignatureException, IllegalArgumentException  {
-
         Claims claims = Jwts.parser()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(appKey))
                 .parseClaimsJws(jwt)

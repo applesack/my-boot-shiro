@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>xyz.scootaloo</groupId>
-    <artifactId>bootshiroapp</artifactId>
+    <artifactId>boot-shiro-project</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>bootShiroApp</name>
@@ -42,7 +42,7 @@
     </dependencies>
 
     <modules>
-        <module>bootShiro</module>
+        <module>bootshiro</module>
     </modules>
 
     <build>

@@ -23,7 +23,7 @@ import java.util.Map;
 public class MapPutter {
 
     public static <K, V> Putter<K, V> put(K key, V value) {
-        return new Putter<K, V>(key, value);
+        return new Putter<>(key, value);
     }
 
     public static <K, V> Putter<K, V> set(Map<K, V> map) {

@@ -157,7 +157,7 @@
         where ID = #{id,jdbcType=INTEGER}
     </update>
 
-    <select id="selectRoleRules" resultType="xyz.scootaloo.bootshiro.domain.po.AuthResource">
+    <select id="selectRoleRules" resultType="xyz.scootaloo.bootshiro.security.rule.RolePermRule">
         select  CONCAT(re.URI, '==', UCASE(re.method)) as url, GROUP_CONCAT(rol.CODE ORDER BY re.URI) as needRoles
         from auth_resource re
                  LEFT JOIN auth_role_resource ro on re.id = ro.RESOURCE_ID

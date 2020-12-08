@@ -37,8 +37,7 @@ public class ShiroFilterChainManager {
     private boolean isEncryptPassword;
 
     /**
-     * description 初始化获取过滤链
-     *
+     * 获取过滤链
      * @return java.util.Map<java.lang.String,javax.servlet.Filter>
      */
     public Map<String, Filter> initGetFilters() {
@@ -48,18 +47,20 @@ public class ShiroFilterChainManager {
                 .get();
     }
     /**
-     * description 初始化获取过滤链规则
-     *
-     * @return java.util.Map<java.lang.String,java.lang.String>
+     * 初始化获取过滤链规则
+     * @return java.util.Map<java.lang.String, java.lang.String>
      */
     public Map<String,String> initGetFilterChain() {
-        Map<String,String> filterChain = new LinkedHashMap<>();
-        // -------------anon 默认过滤器忽略的URL
-        List<String> defaultAnon = Arrays.asList("/css/**","/js/**");
-        defaultAnon.forEach(ignored -> filterChain.put(ignored,"anon"));
-        // -------------auth 默认需要认证过滤器的URL 走auth--PasswordFilter
-        List<String> defaultAuth = Collections.singletonList("/account/**");
-        defaultAuth.forEach(auth -> filterChain.put(auth,"auth"));
+        final String anonStr = "anon"; // 标记为 anon 的路径会被过滤器忽略
+        Map<String,String> filterChain = MapPutter
+                            .<String, String>set(new LinkedHashMap<>())
+                // ------------- anon 默认过滤器忽略的URL
+                            .put("/css/**", anonStr)
+                            .put("/js/**", anonStr)
+                // ------------- auth 默认需要认证过滤器的URL 走auth--PasswordFilter
+                            .put("/account/**", "auth")
+                            .get();
+
         // -------------dynamic 动态URL
         if (shiroFilterRulesProvider != null) {
             List<RolePermRule> rolePermRules = this.shiroFilterRulesProvider.loadRolePermRules();
@@ -91,6 +92,9 @@ public class ShiroFilterChainManager {
         } catch (Exception e) {
             log.error(e.getMessage(),e);
         }
+    }
+
+    public ShiroFilterChainManager() {
     }
 
     // setter
