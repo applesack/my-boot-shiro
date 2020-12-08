@@ -9,7 +9,7 @@ import java.util.Random;
  * @author : flutterdash@qq.com
  * @since : 2020年12月07日 19:13
  */
-public class Common {
+public class Commons {
 
     private static final char[] WORDS = "abcdefghijklmnopqrstuvwxyz1234567890".toCharArray();
     private static final int WORD_LEN = WORDS.length;

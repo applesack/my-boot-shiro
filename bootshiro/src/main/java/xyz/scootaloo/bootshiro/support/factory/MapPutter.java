@@ -30,7 +30,7 @@ public class MapPutter {
         return new Putter<>(map);
     }
 
-    private static class Putter<K, V> {
+    public static class Putter<K, V> {
 
         private final Map<K, V> map;
 

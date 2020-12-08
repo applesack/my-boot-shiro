@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * 管理账户的登陆和注册
  * 在登陆或者注册过程中出现失败的状态码，状态码的含义请参考:
  * @see xyz.scootaloo.bootshiro.domain.bo.StatusCode
- *
+ * -------------------------------------------------
  * @author : flutterdash@qq.com
  * @since : 2020年12月05日 11:38
  */
@@ -39,13 +39,13 @@ public class AccountController extends BaseHttpServ {
     private static final String JWT_SESSION_PREFIX = "JWT-SESSION-";
     private static final long REFRESH_PERIOD_TIME = 36000L;
     // 字符串常量
-    private static final String STR_USERNAME  = "username";
-    private static final String STR_REAL_NAME = "realName";
-    private static final String STR_AVATAR    = "avatar";
-    private static final String STR_PHONE     = "phone";
-    private static final String STR_EMAIL     = "email";
-    private static final String STR_SEX       = "sex";
-    private static final String STR_WHERE     = "createWhere";
+    private static final String USERNAME_STR  = "username";
+    private static final String REAL_NAME_STR = "realName";
+    private static final String AVATAR_STR    = "avatar";
+    private static final String PHONE_STR     = "phone";
+    private static final String EMAIL_STR     = "email";
+    private static final String SEX_STR       = "sex";
+    private static final String WHERE_STR     = "createWhere";
 
     // services
     private StringRedisTemplate redisTemplate;
@@ -101,35 +101,36 @@ public class AccountController extends BaseHttpServ {
         }
 
         user.setUid(uid);
+        String ipAddress = IpUtils.getIp(request).toUpperCase(); // 获取请求中的ip地址
 
         if (isEncryptPassword) {
             // 从Redis取出密码传输加密解密秘钥
             String tokenKey = redisTemplate.opsForValue()
-                    .get("TOKEN_KEY_" + IpUtils.getIp(request).toUpperCase() + userKey);
+                    .get("TOKEN_KEY_" + ipAddress + userKey);
             password = AesUtils.aesDecode(password, tokenKey);
         }
         // 存储到数据库的密码为 MD5(原密码+盐值)
-        String salt = Common.getRandomStr(6);
+        String salt = Commons.getRandomStr(6);
         user.setPassword(Md5Utils.md5(password + salt));
         user.setSalt(salt);
         user.setCreateTime(new Date());
 
         // 将params中不为空的属性设置入user对象
         VarInspector<AuthUser> checker = new VarInspector<>(user);
-        checker.ifNotEmptyThenSet(params.get(STR_USERNAME), user::setUsername);
-        checker.ifNotEmptyThenSet(params.get(STR_REAL_NAME), user::setRealName);
-        checker.ifNotEmptyThenSet(params.get(STR_AVATAR), user::setAvatar);
-        checker.ifNotEmptyThenSet(params.get(STR_PHONE), user::setPhone);
-        checker.ifNotEmptyThenSet(params.get(STR_EMAIL), user::setEmail);
-        checker.ifNotEmptyThenSet(params.get(STR_SEX), (value) -> user.setSex(Byte.valueOf(value)));
-        checker.ifNotEmptyThenSet(params.get(STR_WHERE), (value) -> user.setCreateWhere(Byte.valueOf(value)));
+        checker.ifNotEmptyThenSet(params.get(USERNAME_STR), user::setUsername);
+        checker.ifNotEmptyThenSet(params.get(REAL_NAME_STR), user::setRealName);
+        checker.ifNotEmptyThenSet(params.get(AVATAR_STR), user::setAvatar);
+        checker.ifNotEmptyThenSet(params.get(PHONE_STR), user::setPhone);
+        checker.ifNotEmptyThenSet(params.get(EMAIL_STR), user::setEmail);
+        checker.ifNotEmptyThenSet(params.get(SEX_STR), (value) -> user.setSex(Byte.valueOf(value)));
+        checker.ifNotEmptyThenSet(params.get(WHERE_STR), (value) -> user.setCreateWhere(Byte.valueOf(value)));
         user.setStatus((byte) 1);
 
         if (accountService.registerAccount(user)) {
-            taskManager.executeTask(TaskFactory.registerLog(uid, IpUtils.getIp(request), (short) 1, "注册成功"));
+            taskManager.executeTask(TaskFactory.registerLog(uid, ipAddress, (short) 1, "注册成功"));
             return Message.of(StatusCode.REGISTER_SUCCESS);
         } else {
-            taskManager.executeTask(TaskFactory.registerLog(uid, IpUtils.getIp(request), (short) 0, "注册失败"));
+            taskManager.executeTask(TaskFactory.registerLog(uid, ipAddress, (short) 0, "注册失败"));
             return Message.of(StatusCode.REGISTER_FAILURE);
         }
     }

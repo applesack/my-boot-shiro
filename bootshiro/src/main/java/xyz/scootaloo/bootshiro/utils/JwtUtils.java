@@ -25,7 +25,7 @@ import java.util.Map;
 public class JwtUtils {
 
     // 密钥， json->javaObject， 加密解密器
-    private static final String SECRET_KEY = "?::4343fdf4fdf6cvf):";
+    public static final String SECRET_KEY = "?::4343fdf4fdf6cvf):";
     private static final ObjectMapper CONVERTER = new ObjectMapper();
     private static final CompressionCodecResolver codecResolver = new DefaultCompressionCodecResolver();
 
@@ -73,8 +73,23 @@ public class JwtUtils {
                 .compact();
     }
 
-    public static JwtAccount parseJwt(String jwtString) {
-        return null;
+    public static JwtAccount parseJwt(String jwt, String appKey)
+            throws ExpiredJwtException, UnsupportedJwtException,
+                    MalformedJwtException, SignatureException, IllegalArgumentException  {
+
+        Claims claims = Jwts.parser()
+                .setSigningKey(DatatypeConverter.parseBase64Binary(appKey))
+                .parseClaimsJws(jwt)
+                .getBody();
+        JwtAccount jwtAccount = new JwtAccount();
+        jwtAccount.setTokenId(claims.getId());    // 令牌ID
+        jwtAccount.setAppId(claims.getSubject()); // 客户标识
+        jwtAccount.setIssuer(claims.getIssuer()); // 签发者
+        jwtAccount.setIssuedAt(claims.getIssuedAt()); // 签发时间
+        jwtAccount.setAudience(claims.getAudience()); // 接收方
+        jwtAccount.setRoles(claims.get("roles", String.class)); // 访问主张-角色
+        jwtAccount.setPerms(claims.get("perms", String.class)); // 访问主张-权限
+        return jwtAccount;
     }
 
     public static String parseJwtPayload(String jwt) {
@@ -115,7 +130,7 @@ public class JwtUtils {
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<String, Object> readValue(String val) {
+    public static Map<String, Object> readValue(String val) {
         try {
             return CONVERTER.readValue(val, Map.class);
         } catch (IOException e) {

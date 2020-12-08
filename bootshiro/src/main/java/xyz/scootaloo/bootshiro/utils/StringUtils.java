@@ -4,7 +4,9 @@ import org.springframework.lang.Nullable;
 import xyz.scootaloo.bootshiro.support.Assert;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 字符串工具
@@ -12,6 +14,19 @@ import java.util.List;
  * @since : 2020年12月06日 20:18
  */
 public class StringUtils extends org.springframework.util.StringUtils {
+
+    public static Set<String> splitAndToSet(String line, char point) {
+        Set<String> res = new HashSet<>();
+        if (isEmpty(line))
+            return res;
+        List<String> segments = splitBy(line, point);
+        if (segments.size() > 0) {
+            res.addAll(segments);
+            return res;
+        } else {
+            return res;
+        }
+    }
 
     public static List<String> splitBy(String line, char point) {
         Assert.notNull(line, "被分隔的字符串不能为空");

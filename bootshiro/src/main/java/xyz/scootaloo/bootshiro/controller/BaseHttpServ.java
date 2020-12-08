@@ -1,6 +1,6 @@
 package xyz.scootaloo.bootshiro.controller;
 
-import xyz.scootaloo.bootshiro.utils.RequestResponseUtils;
+import xyz.scootaloo.bootshiro.utils.HttpUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -15,15 +15,15 @@ import java.util.Map;
 public abstract class BaseHttpServ {
 
     protected final Map<String, String> getRequestParameter(HttpServletRequest request) {
-        return RequestResponseUtils.getRequestParameters(request);
+        return HttpUtils.getRequestParameters(request);
     }
 
     protected final Map<String, String> getRequestBody(HttpServletRequest request) {
-        return RequestResponseUtils.getRequestBodyMap(request);
+        return HttpUtils.getRequestBodyMap(request);
     }
 
     protected final Map<String, String> getRequestHeader(HttpServletRequest request) {
-        return RequestResponseUtils.getRequestHeader(request);
+        return HttpUtils.getRequestHeader(request);
     }
 
 }

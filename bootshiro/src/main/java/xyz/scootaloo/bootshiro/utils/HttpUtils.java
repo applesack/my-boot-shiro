@@ -2,12 +2,15 @@ package xyz.scootaloo.bootshiro.utils;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.web.util.WebUtils;
 import xyz.scootaloo.bootshiro.support.XssHttpServletRequestWrapper;
 import xyz.scootaloo.bootshiro.support.factory.EmptyCollections;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +20,7 @@ import java.util.Map;
  * @since : 2020年12月04日 22:17
  */
 @Slf4j
-public class RequestResponseUtils {
+public class HttpUtils {
 
     private static final String JSON_CONTENT_TYPE = "application/json;charset=utf-8";
     private static final String STR_BODY          = "body";
@@ -101,5 +104,14 @@ public class RequestResponseUtils {
         return new XssHttpServletRequestWrapper((HttpServletRequest) servletRequest);
     }
 
+    public static void responseWrite(ServletResponse response, Object data) {
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType(JSON_CONTENT_TYPE);
+        try (PrintWriter writer = WebUtils.toHttp(response).getWriter()) {
+            writer.write(JSON.toJSONString(data));
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
 
 }
