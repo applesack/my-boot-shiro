@@ -74,7 +74,7 @@ public interface AuthResourceMapper {
      * @return java.util.List<com.usthe.bootshiro.shiro.rule.RolePermRule>
      * @throws DataAccessException when
      */
-    List<RolePermRule> selectRoleRules()  throws DataAccessException;
+    List<RolePermRule> selectRoleRules() throws DataAccessException;
 
     /**
      * description TODO

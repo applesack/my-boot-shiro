@@ -38,11 +38,10 @@ public class PasswordFilter extends AccessControlFilter {
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-
         Subject subject = getSubject(request,response);
         // 如果其已经登录，再此发送登录请求
         //  拒绝，统一交给 onAccessDenied 处理
-        return null != subject && subject.isAuthenticated();
+        return subject != null && subject.isAuthenticated();
     }
 
     @Override

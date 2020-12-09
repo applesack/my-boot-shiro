@@ -4,15 +4,19 @@ import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import xyz.scootaloo.bootshiro.domain.bo.Account;
+import xyz.scootaloo.bootshiro.security.matcher.PasswordMatcher;
 import xyz.scootaloo.bootshiro.security.provider.AccountProvider;
 import xyz.scootaloo.bootshiro.security.token.PasswordToken;
 import xyz.scootaloo.bootshiro.utils.Md5Utils;
-import xyz.scootaloo.bootshiro.domain.bo.Account;
 
 /**
  * @author : flutterdash@qq.com
  * @since : 2020年12月08日 10:32
  */
+@Component
 public class PasswordRealm extends AuthorizingRealm {
 
     private AccountProvider accountProvider;
@@ -48,8 +52,14 @@ public class PasswordRealm extends AuthorizingRealm {
         }
     }
 
+    public PasswordRealm(PasswordMatcher passwordMatcher) {
+        setCredentialsMatcher(passwordMatcher);
+        setAuthenticationTokenClass(PasswordToken.class);
+    }
+
     // setter
 
+    @Autowired
     public void setAccountProvider(AccountProvider accountProvider) {
         this.accountProvider = accountProvider;
     }

@@ -26,6 +26,7 @@ public class ShiroConfig {
                                                          ShiroFilterChainManager filterChainManager,
                                                          RestShiroFilterFactoryBean shiroFilterFactoryBean) {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
+        filterChainManager.setShiroFilterFactoryBean(shiroFilterFactoryBean);
         shiroFilterFactoryBean.setFilters(filterChainManager.initGetFilters());
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainManager.initGetFilterChain());
         return shiroFilterFactoryBean;

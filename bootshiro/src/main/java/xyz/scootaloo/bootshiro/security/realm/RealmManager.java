@@ -3,11 +3,6 @@ package xyz.scootaloo.bootshiro.security.realm;
 import org.apache.shiro.realm.Realm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import xyz.scootaloo.bootshiro.security.matcher.JwtMatcher;
-import xyz.scootaloo.bootshiro.security.matcher.PasswordMatcher;
-import xyz.scootaloo.bootshiro.security.provider.AccountProvider;
-import xyz.scootaloo.bootshiro.security.token.JwtToken;
-import xyz.scootaloo.bootshiro.security.token.PasswordToken;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -20,22 +15,14 @@ import java.util.List;
 @Component
 public class RealmManager {
 
-    private JwtMatcher jwtMatcher;
-    private PasswordMatcher passwordMatcher;
-    private AccountProvider accountProvider;
+    private PasswordRealm passwordRealm;
+    private JwtRealm jwtRealm;
 
     public List<Realm> initGetRealm() {
         List<Realm> realmList = new LinkedList<>();
         // ----- password
-        PasswordRealm passwordRealm = new PasswordRealm();
-        passwordRealm.setAccountProvider(accountProvider);
-        passwordRealm.setCredentialsMatcher(passwordMatcher);
-        passwordRealm.setAuthenticationTokenClass(PasswordToken.class);
         realmList.add(passwordRealm);
         // ----- jwt
-        JwtRealm jwtRealm = new JwtRealm();
-        jwtRealm.setCredentialsMatcher(jwtMatcher);
-        jwtRealm.setAuthenticationTokenClass(JwtToken.class);
         realmList.add(jwtRealm);
         return Collections.unmodifiableList(realmList);
     }
@@ -46,18 +33,13 @@ public class RealmManager {
     // setter
 
     @Autowired
-    public void setJwtMatcher(JwtMatcher jwtMatcher) {
-        this.jwtMatcher = jwtMatcher;
+    public void setPasswordRealm(PasswordRealm passwordRealm) {
+        this.passwordRealm = passwordRealm;
     }
 
     @Autowired
-    public void setPasswordMatcher(PasswordMatcher passwordMatcher) {
-        this.passwordMatcher = passwordMatcher;
-    }
-
-    @Autowired
-    public void setAccountProvider(AccountProvider accountProvider) {
-        this.accountProvider = accountProvider;
+    public void setJwtRealm(JwtRealm jwtRealm) {
+        this.jwtRealm = jwtRealm;
     }
 
 }

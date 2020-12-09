@@ -9,11 +9,12 @@ import xyz.scootaloo.bootshiro.security.rule.RolePermRule;
 import java.util.List;
 
 /**
+ * 从数据库中获取
  * @author : flutterdash@qq.com
  * @since : 2020年12月08日 11:25
  */
 @Service("ShiroFilterRulesProvider")
-public class ShiroFilterRulesProviderImpl implements ShiroFilterRulesProvider {
+public class DatabaseShiroFilterRulesProvider implements ShiroFilterRulesProvider {
 
     private AuthResourceMapper authResourceMapper;
 

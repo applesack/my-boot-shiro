@@ -9,6 +9,9 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import xyz.scootaloo.bootshiro.security.matcher.JwtMatcher;
 import xyz.scootaloo.bootshiro.security.token.JwtToken;
 import xyz.scootaloo.bootshiro.utils.JwtUtils;
 import xyz.scootaloo.bootshiro.utils.StringUtils;
@@ -20,6 +23,7 @@ import java.util.Set;
  * @author : flutterdash@qq.com
  * @since : 2020年12月08日 10:54
  */
+@Component
 public class JwtRealm extends AuthorizingRealm {
 
     private static final String JWT   = "jwt:";
@@ -80,6 +84,12 @@ public class JwtRealm extends AuthorizingRealm {
             throw new AuthenticationException("errJwt");
         }
         return new SimpleAuthenticationInfo("jwt:"+payload,jwt,this.getName());
+    }
+
+    @Autowired
+    public JwtRealm(JwtMatcher jwtMatcher) {
+        setCredentialsMatcher(jwtMatcher);
+        setAuthenticationTokenClass(JwtToken.class);
     }
 
 }

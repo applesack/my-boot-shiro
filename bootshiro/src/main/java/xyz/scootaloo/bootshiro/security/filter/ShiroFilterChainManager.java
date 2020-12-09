@@ -5,18 +5,16 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import xyz.scootaloo.bootshiro.security.config.RestPathMatchingFilterChainResolver;
 import xyz.scootaloo.bootshiro.security.provider.ShiroFilterRulesProvider;
 import xyz.scootaloo.bootshiro.security.rule.RolePermRule;
-import xyz.scootaloo.bootshiro.service.AccountService;
-import xyz.scootaloo.bootshiro.support.SpringContextHolder;
 import xyz.scootaloo.bootshiro.support.factory.MapPutter;
 
 import javax.servlet.Filter;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author : flutterdash@qq.com
@@ -27,14 +25,11 @@ import java.util.*;
 public class ShiroFilterChainManager {
 
     private ShiroFilterRulesProvider shiroFilterRulesProvider;
-    private StringRedisTemplate redisTemplate;
-    private AccountService accountService;
 
     private PasswordFilter passwordFilter;
     private BonJwtFilter jwtFilter;
 
-    @Value("${bootshiro.enableEncryptPassword}")
-    private boolean isEncryptPassword;
+    private ShiroFilterFactoryBean shiroFilterFactoryBean;
 
     /**
      * 获取过滤链
@@ -65,32 +60,36 @@ public class ShiroFilterChainManager {
         if (shiroFilterRulesProvider != null) {
             List<RolePermRule> rolePermRules = this.shiroFilterRulesProvider.loadRolePermRules();
             if (null != rolePermRules) {
+                StringBuilder sb = new StringBuilder();
                 rolePermRules.forEach(rule -> {
-                    StringBuilder chain = rule.toFilterChain();
+                    sb.setLength(0);
+                    String chain = rule.toFilterChain(sb);
                     if (null != chain) {
-                        filterChain.putIfAbsent(rule.getUrl(),chain.toString());
+                        filterChain.putIfAbsent(rule.getUrl(), chain);
                     }
                 });
             }
         }
         return filterChain;
     }
+
     /**
      * description 动态重新加载过滤链规则
      */
     public void reloadFilterChain() {
-        ShiroFilterFactoryBean shiroFilterFactoryBean = SpringContextHolder.getBean(ShiroFilterFactoryBean.class);
         AbstractShiroFilter abstractShiroFilter;
         try {
-            abstractShiroFilter = (AbstractShiroFilter)shiroFilterFactoryBean.getObject();
-            RestPathMatchingFilterChainResolver filterChainResolver = (RestPathMatchingFilterChainResolver)abstractShiroFilter.getFilterChainResolver();
-            DefaultFilterChainManager filterChainManager = (DefaultFilterChainManager)filterChainResolver.getFilterChainManager();
+            abstractShiroFilter = (AbstractShiroFilter) shiroFilterFactoryBean.getObject();
+            RestPathMatchingFilterChainResolver filterChainResolver
+                    = (RestPathMatchingFilterChainResolver) abstractShiroFilter.getFilterChainResolver();
+            DefaultFilterChainManager filterChainManager
+                    = (DefaultFilterChainManager) filterChainResolver.getFilterChainManager();
             filterChainManager.getFilterChains().clear();
             shiroFilterFactoryBean.getFilterChainDefinitionMap().clear();
             shiroFilterFactoryBean.setFilterChainDefinitionMap(this.initGetFilterChain());
             shiroFilterFactoryBean.getFilterChainDefinitionMap().forEach(filterChainManager::createChain);
         } catch (Exception e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -105,16 +104,6 @@ public class ShiroFilterChainManager {
     }
 
     @Autowired
-    public void setRedisTemplate(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
-
-    @Autowired
-    public void setAccountService(AccountService accountService) {
-        this.accountService = accountService;
-    }
-
-    @Autowired
     public void setShiroFilterRulesProvider(ShiroFilterRulesProvider shiroFilterRulesProvider) {
         this.shiroFilterRulesProvider = shiroFilterRulesProvider;
     }
@@ -122,6 +111,10 @@ public class ShiroFilterChainManager {
     @Autowired
     public void setJwtFilter(BonJwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
+    }
+
+    public void setShiroFilterFactoryBean(ShiroFilterFactoryBean shiroFilterFactoryBean) {
+        this.shiroFilterFactoryBean = shiroFilterFactoryBean;
     }
 
 }
