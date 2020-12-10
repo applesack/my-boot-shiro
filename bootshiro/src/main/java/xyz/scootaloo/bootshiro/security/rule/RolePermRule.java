@@ -30,32 +30,31 @@ public class RolePermRule implements Serializable {
 
     /**
      * 将url 和 needRoles 转化成shiro可识别的过滤器链：url=jwt[角色1、角色2、角色n]
-     * anon[role1,role2,...] 或者
+     * anon 或者
      * jwt[role1,role2,...]
-     * @param stringBuilder 经过观察发现只有一个地方调用了这个方法，为了防止一个对象被反复创建，干脆由方法调用者来注入这个对象
      * @return java.lang.StringBuilder
      */
-    public String toFilterChain(StringBuilder stringBuilder) {
+    public String toFilterChain() {
         if (null == this.url || this.url.isEmpty()) {
             return null;
         }
         Set<String> setRole = StringUtils.splitAndToSet(this.getNeedRoles(), ',');
 
         // 约定若role_anon角色拥有此uri资源的权限,则此uri资源直接访问不需要认证和权限
-        if (!StringUtils.isEmpty(this.getNeedRoles()) && setRole.contains(ANON_ROLE)) {
-            stringBuilder.append("anon");
+        if (!StringUtils.isEmpty(getNeedRoles())) {
+            if (setRole.contains(ANON_ROLE)) {
+                return "anon";
+            } else {
+                return "jwt[" + getNeedRoles() + "]";
+            }
+        } else {
+            return null;
         }
-        //  其他自定义资源uri需通过jwt认证和角色认证
-        if (!StringUtils.isEmpty(this.getNeedRoles()) && !setRole.contains(ANON_ROLE)) {
-            stringBuilder.append("jwt" + "[").append(this.getNeedRoles()).append("]");
-        }
-
-        return stringBuilder.length() > 0 ? stringBuilder.toString() : null;
     }
 
     @Override
     public String toString() {
-        return "RolePermRule [url="+url+", needRoles="+needRoles+"]";
+        return "RolePermRule [url=" + url + ", needRoles=" + needRoles + "]";
     }
 
 }

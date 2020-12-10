@@ -22,10 +22,8 @@ public class StringUtils extends org.springframework.util.StringUtils {
         List<String> segments = splitBy(line, point);
         if (segments.size() > 0) {
             res.addAll(segments);
-            return res;
-        } else {
-            return res;
         }
+        return res;
     }
 
     public static List<String> splitBy(String line, char point) {

@@ -21,7 +21,7 @@ public class RoleMapperTest {
     public void testRoleMapper() {
         List<RolePermRule> rolePermRuleList = authResourceMapper.selectRoleRules();
         for (RolePermRule role : rolePermRuleList) {
-            System.out.println(role);
+            System.out.println(role.toFilterChain());
         }
     }
 

@@ -45,14 +45,14 @@ public class JwtRealm extends AuthorizingRealm {
                 && payload.charAt(payload.length() - 1) == RIGHT) {
 
             Map<String, Object> payloadMap = JwtUtils.readValue(payload.substring(4));
-            Set<String> roles = StringUtils.splitAndToSet((String)payloadMap.get("roles"), ',');
-            Set<String> permissions = StringUtils.splitAndToSet((String)payloadMap.get("perms"), ',');
+            Set<String> roles = StringUtils.splitAndToSet((String) payloadMap.get("roles"), ',');
+            Set<String> permissions = StringUtils.splitAndToSet((String) payloadMap.get("perms"), ',');
             SimpleAuthorizationInfo info =  new SimpleAuthorizationInfo();
 
-            if(!roles.isEmpty()) {
+            if (!roles.isEmpty()) {
                 info.setRoles(roles);
             }
-            if(!permissions.isEmpty()) {
+            if (!permissions.isEmpty()) {
                 info.setStringPermissions(permissions);
             }
             return info;
@@ -66,24 +66,24 @@ public class JwtRealm extends AuthorizingRealm {
             return null;
         }
         JwtToken jwtToken = (JwtToken) token;
-        String jwt = (String)jwtToken.getCredentials();
+        String jwt = (String) jwtToken.getCredentials();
         String payload;
-        try{
+        try {
             // 预先解析Payload
             // 没有做任何的签名校验
             payload = JwtUtils.parseJwtPayload(jwt);
-        } catch(MalformedJwtException e){
+        } catch(MalformedJwtException e) {
             //令牌格式错误
             throw new AuthenticationException("errJwt");
-        } catch(Exception e){
+        } catch(Exception e) {
             //令牌无效
             throw new AuthenticationException("errsJwt");
         }
-        if(null == payload){
+        if (null == payload) {
             //令牌无效
             throw new AuthenticationException("errJwt");
         }
-        return new SimpleAuthenticationInfo("jwt:"+payload,jwt,this.getName());
+        return new SimpleAuthenticationInfo("jwt:"  + payload, jwt, this.getName());
     }
 
     @Autowired

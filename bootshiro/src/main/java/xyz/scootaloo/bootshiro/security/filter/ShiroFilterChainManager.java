@@ -60,10 +60,8 @@ public class ShiroFilterChainManager {
         if (shiroFilterRulesProvider != null) {
             List<RolePermRule> rolePermRules = this.shiroFilterRulesProvider.loadRolePermRules();
             if (null != rolePermRules) {
-                StringBuilder sb = new StringBuilder();
                 rolePermRules.forEach(rule -> {
-                    sb.setLength(0);
-                    String chain = rule.toFilterChain(sb);
+                    String chain = rule.toFilterChain();
                     if (null != chain) {
                         filterChain.putIfAbsent(rule.getUrl(), chain);
                     }

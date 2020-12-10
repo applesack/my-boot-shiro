@@ -36,19 +36,19 @@ public class PasswordRealm extends AuthorizingRealm {
         if (!(token instanceof PasswordToken)) {
             return null;
         }
-        if(null == token.getPrincipal() || null == token.getCredentials()) {
+        if (null == token.getPrincipal() || null == token.getCredentials()) {
             throw new UnknownAccountException();
         }
 
-        String appId = (String)token.getPrincipal();
+        String appId = (String) token.getPrincipal();
         Account account = accountProvider.loadAccount(appId);
         if (account != null) {
             // 用盐对密码进行MD5加密
             ((PasswordToken) token).setPassword(Md5Utils.md5(((PasswordToken) token)
                     .getPassword() + account.getSalt()));
-            return new SimpleAuthenticationInfo(appId,account.getPassword(), getName());
+            return new SimpleAuthenticationInfo(appId, account.getPassword(), getName());
         } else {
-            return new SimpleAuthenticationInfo(appId,"", getName());
+            return new SimpleAuthenticationInfo(appId, "", getName());
         }
     }
 

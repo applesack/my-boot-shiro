@@ -25,6 +25,9 @@ public class ShiroConfig {
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager,
                                                          ShiroFilterChainManager filterChainManager,
                                                          RestShiroFilterFactoryBean shiroFilterFactoryBean) {
+        /*
+         * 1. 绑定
+         */
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         filterChainManager.setShiroFilterFactoryBean(shiroFilterFactoryBean);
         shiroFilterFactoryBean.setFilters(filterChainManager.initGetFilters());

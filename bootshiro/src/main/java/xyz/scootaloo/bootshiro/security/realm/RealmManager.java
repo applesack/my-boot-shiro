@@ -20,9 +20,7 @@ public class RealmManager {
 
     public List<Realm> initGetRealm() {
         List<Realm> realmList = new LinkedList<>();
-        // ----- password
         realmList.add(passwordRealm);
-        // ----- jwt
         realmList.add(jwtRealm);
         return Collections.unmodifiableList(realmList);
     }
