@@ -35,7 +35,7 @@ import java.util.Map;
 public class Message {
 
     // 消息状态
-    private StatusCodeObject status;
+    private StatusCodeObject meta;
     // 消息内容，存储实体交互数据
     private Map<String, Object> data = new HashMap<>();
 
@@ -52,7 +52,7 @@ public class Message {
     // 使用其他的状态码开始创建Message对象
     public static Message of(StatusCode statusCode) {
         Message message = getInstance();
-        message.status = statusCode.toMap();
+        message.meta = statusCode.toMap();
         return message;
     }
 

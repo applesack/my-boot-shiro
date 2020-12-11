@@ -8,14 +8,12 @@ import org.apache.shiro.web.filter.mgt.FilterChainResolver;
 import org.apache.shiro.web.mgt.WebSecurityManager;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.stereotype.Component;
 
 /**
  * @author : flutterdash@qq.com
  * @since : 2020年12月08日 11:19
  */
 @Slf4j
-@Component
 public class RestShiroFilterFactoryBean extends ShiroFilterFactoryBean {
 
     public RestShiroFilterFactoryBean() {
@@ -37,7 +35,7 @@ public class RestShiroFilterFactoryBean extends ShiroFilterFactoryBean {
             FilterChainManager manager = this.createFilterChainManager();
             RestPathMatchingFilterChainResolver chainResolver = new RestPathMatchingFilterChainResolver();
             chainResolver.setFilterChainManager(manager);
-            return new RestShiroFilterFactoryBean.SpringShiroFilter((WebSecurityManager)securityManager, chainResolver);
+            return new RestShiroFilterFactoryBean.SpringShiroFilter((WebSecurityManager) securityManager, chainResolver);
         }
     }
 

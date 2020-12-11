@@ -11,13 +11,13 @@ import java.util.Random;
  */
 public class Commons {
 
-    private static final char[] WORDS = "abcdefghijklmnopqrstuvwxyz1234567890".toCharArray();
+    private static final char[] WORDS = "ABCDEFGHIJKLMNOPQRST1234567890".toCharArray();
     private static final int WORD_LEN = WORDS.length;
     private static final Random random = new Random();
 
     /**
      * 生成随机字符串
-     * 生成的字符串只包含26个英文小写字母和数字
+     * 生成的字符串只包含26个英文大写字母和数字
      * @param len 字符串的长度
      * @return 随机字符串
      */

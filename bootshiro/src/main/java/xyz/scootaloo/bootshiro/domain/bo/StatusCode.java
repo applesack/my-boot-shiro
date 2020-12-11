@@ -36,9 +36,13 @@ public enum StatusCode {
     LACK_ACCOUNT_INFO(2001, Boolean.FALSE, "注册账户信息不完善"),
     REGISTER_SUCCESS (2002, Boolean.TRUE , "注册用户成功"),
     ACCOUNT_EXIST    (2003, Boolean.FALSE, "账号已存在"),
-    REGISTER_FAILURE (2004, Boolean.FALSE, "注册失败");
+    REGISTER_FAILURE (2004, Boolean.FALSE, "注册失败"),
 
-    // 业务类状态码 3000+ ... ...
+    // 服务器错误
+    DEFAULT_SERVER_ERROR(3000, Boolean.FALSE, "服务器开小差"),
+    DATABASES_CONFLICT  (3001, Boolean.FALSE, "数据库冲突操作失败");
+
+    // 业务类状态码 4000+ ... ...
 
     // status
     private final Integer code;        // 状态码

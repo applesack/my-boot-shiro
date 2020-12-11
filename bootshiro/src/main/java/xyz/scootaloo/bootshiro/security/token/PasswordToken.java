@@ -36,6 +36,7 @@ public class PasswordToken implements AuthenticationToken, Serializable {
     public Object getCredentials() {
         return this.password;
     }
+
     public PasswordToken(String appId, String password, String timestamp, String host) {
         this.appId = appId;
         this.timestamp = timestamp;

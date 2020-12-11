@@ -29,37 +29,42 @@ import java.util.concurrent.TimeUnit;
  * @since : 2020年12月08日 11:36
  */
 @Slf4j
-@Component
 public class PasswordFilter extends AccessControlFilter {
 
-    @Value("${bootshiro.enableEncryptPassword}")
     private boolean isEncryptPassword;
     private StringRedisTemplate redisTemplate;
 
+    /**
+     * 是否允许访问
+     * @param request 请求
+     * @param response 响应
+     * @param mappedValue 拦截器参数
+     * @return 用户已登陆，则放行
+     */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        Subject subject = getSubject(request,response);
+        log.info("有新请求");
+        Subject subject = getSubject(request, response);
         // 如果其已经登录，再此发送登录请求
-        //  拒绝，统一交给 onAccessDenied 处理
+        // 拒绝，统一交给 onAccessDenied 处理
         return subject != null && subject.isAuthenticated();
     }
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) {
-
         // 判断若为获取登录注册加密动态秘钥请求
         if (isPasswordTokenGet(request)) {
             //动态生成秘钥，redis存储秘钥供之后秘钥验证使用，设置有效期5秒用完即丢弃
             String tokenKey = Commons.getRandomStr(16);
             String userKey = Commons.getRandomStr(6);
             try {
-                redisTemplate.opsForValue().set("TOKEN_KEY_"+ IpUtils.getIp(WebUtils.toHttp(request))
-                            .toUpperCase()+userKey.toUpperCase(),tokenKey,5, TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set("TOKEN_KEY_" + IpUtils.getIp(WebUtils.toHttp(request))
+                            .toUpperCase() + userKey.toUpperCase(), tokenKey,5, TimeUnit.HOURS);
                 // 动态秘钥response返回给前端
                 HttpUtils.responseWrite(response, Message.of(StatusCode.ISSUED_TOKEN_KEY_SUCCESS)
-                        .addData("tokenKey",tokenKey)
+                        .addData("tokenKey", tokenKey)
                         .addData("userKey", userKey.toUpperCase()));
-            }catch (Exception e) {
+            } catch (Exception e) {
                 log.warn("签发动态秘钥失败" + e.getMessage(), e);
                 HttpUtils.responseWrite(response, Message.of(StatusCode.ISSUED_TOKEN_KEY_FAIL));
             }
@@ -67,12 +72,11 @@ public class PasswordFilter extends AccessControlFilter {
         }
 
         // 判断是否是登录请求
-        if(isPasswordLoginPost(request)){
-
+        if (isPasswordLoginPost(request)) {
             AuthenticationToken authenticationToken;
             try {
                 authenticationToken = createPasswordToken(request);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 // response 告知无效请求
                 HttpUtils.responseWrite(response, Message.failure());
                 return false;
@@ -83,13 +87,13 @@ public class PasswordFilter extends AccessControlFilter {
                 subject.login(authenticationToken);
                 //登录认证成功,进入请求派发json web token url资源内
                 return true;
-            }catch (AuthenticationException e) {
-                log.warn(authenticationToken.getPrincipal()+"::"+e.getMessage());
+            } catch (AuthenticationException e) {
+                log.warn(authenticationToken.getPrincipal()+"::" + e.getMessage());
                 // 返回response告诉客户端认证失败
                 HttpUtils.responseWrite(response, Message.of(StatusCode.LOGIN_FAIL));
                 return false;
-            }catch (Exception e) {
-                log.error(authenticationToken.getPrincipal()+"::认证异常::"+e.getMessage(),e);
+            } catch (Exception e) {
+                log.error(authenticationToken.getPrincipal()+"::认证异常::" + e.getMessage(),e);
                 // 返回response告诉客户端认证失败
                 HttpUtils.responseWrite(response, Message.of(StatusCode.LOGIN_FAIL));
                 return false;
@@ -106,16 +110,13 @@ public class PasswordFilter extends AccessControlFilter {
     }
 
     private boolean isPasswordTokenGet(ServletRequest request) {
-
-        String tokenKey = HttpUtils.getParameter(request,"tokenKey");
-
+        String tokenKey = HttpUtils.getParameter(request, "tokenKey");
         return (request instanceof HttpServletRequest)
                 && "GET".equals(((HttpServletRequest) request).getMethod().toUpperCase())
-                &&  "get".equals(tokenKey);
+                && "get".equals(tokenKey);
     }
 
     private boolean isPasswordLoginPost(ServletRequest request) {
-
         Map<String ,String> map = HttpUtils.getRequestBodyMap(request);
         String password = map.get("password");
         String timestamp = map.get("timestamp");
@@ -130,7 +131,6 @@ public class PasswordFilter extends AccessControlFilter {
     }
 
     private boolean isAccountRegisterPost(ServletRequest request) {
-
         Map<String ,String> map = HttpUtils.getRequestBodyMap(request);
         String uid = map.get("uid");
         String username = map.get("username");
@@ -145,26 +145,30 @@ public class PasswordFilter extends AccessControlFilter {
     }
 
     private AuthenticationToken createPasswordToken(ServletRequest request) {
-
-        Map<String ,String> map = HttpUtils.getRequestBodyMap(request);
+        Map<String, String> map = HttpUtils.getRequestBodyMap(request);
         String appId = map.get("appId");
         String timestamp = map.get("timestamp");
         String password = map.get("password");
         String host = IpUtils.getIp(WebUtils.toHttp(request));
         String userKey = map.get("userKey");
         if (isEncryptPassword) {
-            String tokenKey = redisTemplate.opsForValue().get("TOKEN_KEY_"+host.toUpperCase()+userKey);
-            password = AesUtils.aesDecode(password,tokenKey);
+            String tokenKey = redisTemplate.opsForValue().get("TOKEN_KEY_"+host.toUpperCase() + userKey);
+            password = AesUtils.aesDecode(password, tokenKey);
         }
-        return new PasswordToken(appId,password,timestamp,host);
+        return new PasswordToken(appId, password, timestamp, host);
     }
 
     public PasswordFilter() {
     }
 
-    @Autowired
+    // setter
+
     public void setRedisTemplate(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
+    }
+
+    public void setEncryptPassword(boolean flag) {
+        this.isEncryptPassword = flag;
     }
 
 }

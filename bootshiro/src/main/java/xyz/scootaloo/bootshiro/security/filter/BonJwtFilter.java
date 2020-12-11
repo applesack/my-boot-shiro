@@ -33,7 +33,6 @@ import java.util.stream.Stream;
  * @since : 2020年12月08日 14:35
  */
 @Slf4j
-@Component
 public class BonJwtFilter extends AbstractPathMatchingFilter {
 
     private static final String STR_EXPIRED = "expiredJwt";
@@ -157,17 +156,14 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
 
     // setter
 
-    @Autowired
     public void setRedisTemplate(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
-    @Autowired
     public void setAccountService(AccountService accountService) {
         this.accountService = accountService;
     }
 
-    @Autowired
     public void setTaskManager(TaskManager taskManager) {
         this.taskManager = taskManager;
     }

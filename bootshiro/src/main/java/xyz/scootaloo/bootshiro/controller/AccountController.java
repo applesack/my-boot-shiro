@@ -84,7 +84,7 @@ public class AccountController extends BaseHttpServ {
 
     @PostMapping("/register")
     public Message accountRegister(HttpServletRequest request) {
-        Map<String, String> params = getRequestParameter(request);
+        Map<String, String> params = getRequestBody(request);
         AuthUser user = new AuthUser();
 
         String uid = params.get("uid");

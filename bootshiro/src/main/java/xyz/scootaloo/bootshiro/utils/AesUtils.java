@@ -61,15 +61,15 @@ public class AesUtils {
             byte[] byteDecode = cipher.doFinal(bytesContent);
             return new String(byteDecode, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException e) {
-            log.error("没有指定的加密算法::"+e.getMessage(),e);
+            log.error("没有指定的加密算法::" + e.getMessage(), e);
         } catch (IllegalBlockSizeException e) {
-            log.error("非法的块大小"+"::"+e.getMessage(),e);
+            log.error("非法的块大小"+"::" + e.getMessage(), e);
             throw new RuntimeException("密文解密失败");
         } catch (NullPointerException e) {
-            log.error("秘钥解析空指针异常"+"::"+e.getMessage(),e);
+            log.error("秘钥解析空指针异常" + "::"+e.getMessage(), e);
             throw new RuntimeException("秘钥解析空指针异常");
         } catch (Exception e) {
-            log.error("秘钥AES解析出现未知错误"+"::"+e.getMessage(),e);
+            log.error("秘钥AES解析出现未知错误" + "::" + e.getMessage(), e);
             throw new RuntimeException("密文解密失败");
         }
 

@@ -48,7 +48,7 @@ public class VarInspector<T> {
      * @param func 接收字符序列的方法，或者是接口实现
      */
     public void ifNotEmptyThenSet(CharSequence prop, Consumer<String> func) {
-        if (StringUtils.isEmpty(prop)) {
+        if (!StringUtils.isEmpty(prop)) {
             func.accept((String) prop);
         }
     }
