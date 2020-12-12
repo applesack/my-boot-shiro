@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>xyz.scootaloo</groupId>
-    <artifactId>boot-shiro-project</artifactId>
+    <artifactId>bootshiro</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>MyBootShiro</name>

@@ -20,7 +20,7 @@ public class AesUtils {
     /**
      * ENCODE_RULES : 默认加密密钥
      * ALGORITHM_STR : 默认加密算法
-      */
+     */
     public static final String ENCODE_RULES = "theFlutterWander";
     public static final String ALGORITHM_STR = "AES/CBC/PKCS5Padding";
 
@@ -37,10 +37,10 @@ public class AesUtils {
             //根据密码器的初始化方式--加密：将数据加密
             byte[] byteAES = cipher.doFinal(byteEncode);
             //将加密后的byte[]数据转换为Base64字符串
-            return new String(Base64.encodeBase64(byteAES),StandardCharsets.UTF_8);
+            return new String(Base64.encodeBase64(byteAES), StandardCharsets.UTF_8);
             //将字符串返回
         } catch (Exception e) {
-            log.error("密文加密失败"+e.getMessage(),e);
+            log.error("密文加密失败" + e.getMessage(), e);
             throw new RuntimeException("密文加密失败");
         }
     }
@@ -66,7 +66,7 @@ public class AesUtils {
             log.error("非法的块大小"+"::" + e.getMessage(), e);
             throw new RuntimeException("密文解密失败");
         } catch (NullPointerException e) {
-            log.error("秘钥解析空指针异常" + "::"+e.getMessage(), e);
+            log.error("秘钥解析空指针异常" + "::" + e.getMessage(), e);
             throw new RuntimeException("秘钥解析空指针异常");
         } catch (Exception e) {
             log.error("秘钥AES解析出现未知错误" + "::" + e.getMessage(), e);

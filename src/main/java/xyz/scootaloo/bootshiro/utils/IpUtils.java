@@ -2,6 +2,7 @@ package xyz.scootaloo.bootshiro.utils;
 
 import org.apache.commons.lang.text.StrTokenizer;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,18 +22,19 @@ public class IpUtils {
      * 但是由这种复杂的正则表达式完成匹配效率不高，所以放弃使用这种方式，改为用算法实现
      * @see IpUtils#isIPv4Valid(ResultWrapper)
      * @see ResultWrapper
+     * private static final String N255 = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+     * private static final Pattern PATTERN = Pattern.compile("^(?:" + N255 + "\\.){3}" + N255 + "$");
      */
-//    private static final String N255 = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
-//    private static final Pattern PATTERN = Pattern.compile("^(?:" + N255 + "\\.){3}" + N255 + "$");
     private static final String X_FORWARDED_FOR = "x-forwarded-for";
 
     /**
      * 获取request对象的真实ip
      * <a href="https://www.jianshu.com/p/15f3498a7fad">HTTP 请求头中的 X-Forwarded-For</a>
-     * @param request 请求
+     * @param servletRequest 请求
      * @return 真实ip
      */
-    public static String getIp(HttpServletRequest request) {
+    public static String getIp(ServletRequest servletRequest) {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
         String ip;
         boolean found = false;
         // 假如这个请求是由代理服务器访问，那么X_FORWARDED_FOR会包含这些代理服务器的地址

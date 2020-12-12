@@ -24,6 +24,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 管理账户的登陆和注册
+ * 对于登陆和注册请求有效性的验证在PasswordFilter中已经完成。
+ * 这个controller仅负责将用户数据写入数据库，并将处理的结果反馈给前端
+ * @see xyz.scootaloo.bootshiro.security.filter.PasswordFilter
  * 在登陆或者注册过程中出现失败的状态码，状态码的含义请参考:
  * @see xyz.scootaloo.bootshiro.domain.bo.StatusCode
  * -------------------------------------------------
@@ -37,6 +40,7 @@ public class AccountController extends BaseHttpServ {
     // 一些常量
     private static final String APP_ID_STR = "appId";
     private static final String JWT_SESSION_PREFIX = "JWT-SESSION-";
+    private static final String TOKEN_KEY_PREFIX = "TOKEN_KEY_";
     private static final long REFRESH_PERIOD_TIME = 36000L;
     // 字符串常量
     private static final String USERNAME_STR  = "username";
@@ -58,7 +62,7 @@ public class AccountController extends BaseHttpServ {
 
     @PostMapping("/login")
     public Message accountLogin(HttpServletRequest request) {
-        Map<String, String> params = getRequestParameter(request);
+        Map<String, String> params = getRequestBody(request);
         String appId = params.get(APP_ID_STR);
         if (appId == null)
             return Message.of(StatusCode.ERROR_JWT);
@@ -106,7 +110,7 @@ public class AccountController extends BaseHttpServ {
         if (isEncryptPassword) {
             // 从Redis取出密码传输加密解密秘钥
             String tokenKey = redisTemplate.opsForValue()
-                    .get("TOKEN_KEY_" + ipAddress + userKey);
+                    .get(TOKEN_KEY_PREFIX + ipAddress + userKey);
             password = AesUtils.aesDecode(password, tokenKey);
         }
         // 存储到数据库的密码为 MD5(原密码+盐值)

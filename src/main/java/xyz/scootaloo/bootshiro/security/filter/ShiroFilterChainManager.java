@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 管理系统中的过滤链
+ * 管理系统中的过滤链。
+ * 获取过滤链，过获取过滤规则，重新加载过滤链等
  * @author : flutterdash@qq.com
  * @since : 2020年12月08日 11:23
  */
@@ -46,6 +47,10 @@ public class ShiroFilterChainManager {
 
     /**
      * 获取过滤链
+     * 按照原计划这两个过滤链是通过Autowire自动注入的，但是后来出现了过滤链匹配错误的问题。
+     * 解决这个问题目前的方案是使用new关键字来创建实例，具体内容参考:
+     * <a href="https://www.guitu18.com/post/2020/01/06/64.html">自定义Filter实现及其问题排查记录</a>
+     * 内容比较多，暂时没看完，有兴趣可以了解一下。
      * @return java.util.Map<java.lang.String,javax.servlet.Filter>
      */
     public Map<String, Filter> initGetFilters() {
@@ -79,7 +84,7 @@ public class ShiroFilterChainManager {
                             .put("/account/**", "auth")
                             .get();
 
-        // -------------dynamic 动态URL
+        // ------------- dynamic 动态URL
         if (shiroFilterRulesProvider != null) {
             List<RolePermRule> rolePermRules = this.shiroFilterRulesProvider.loadRolePermRules();
             if (null != rolePermRules) {

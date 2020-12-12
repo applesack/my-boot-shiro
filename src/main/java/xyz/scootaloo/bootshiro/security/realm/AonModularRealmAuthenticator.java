@@ -17,14 +17,16 @@ import static java.util.stream.Collectors.toList;
 public class AonModularRealmAuthenticator extends ModularRealmAuthenticator {
 
     @Override
-    protected AuthenticationInfo doAuthenticate(AuthenticationToken authenticationToken) throws AuthenticationException {
-
+    protected AuthenticationInfo doAuthenticate(AuthenticationToken authenticationToken)
+            throws AuthenticationException {
         assertRealmsConfigured();
         List<Realm> realms = this.getRealms()
                 .stream()
                 .filter(realm -> realm.supports(authenticationToken))
                 .collect(toList());
-        return realms.size() == 1 ? this.doSingleRealmAuthentication(realms.iterator().next(), authenticationToken) : this.doMultiRealmAuthentication(realms, authenticationToken);
+        return realms.size() == 1 ?
+                this.doSingleRealmAuthentication(realms.iterator().next(), authenticationToken) :
+                this.doMultiRealmAuthentication(realms, authenticationToken);
     }
 
 }

@@ -8,9 +8,8 @@ import java.sql.Timestamp;
  * 统一业务操作状态码。
  * 一种想法，让成功的状态码为双数，失败的状态码为单数，这样可以节省一个字段 (未实现)。
  * 参照源码做了一些优化，将状态码部分从Message对象中分离出来。
- *
  * @see xyz.scootaloo.bootshiro.domain.bo.Message
- *
+ * ---------------------------------------------
  * @author : flutterdash@qq.com
  * @since : 2020年12月05日 16:30
  */

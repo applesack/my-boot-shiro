@@ -5,11 +5,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
-import org.apache.shiro.web.util.WebUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
 import xyz.scootaloo.bootshiro.domain.bo.Message;
 import xyz.scootaloo.bootshiro.domain.bo.StatusCode;
 import xyz.scootaloo.bootshiro.security.token.PasswordToken;
@@ -25,12 +21,18 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 做为<code>/account/**</code>这个路径的前置过滤
+ * 负责检查请求这个路径的报文中是否包含正确的信息，假如请求不符合规范，
+ * 则会在这里被拦截，不会进入到controller层。
  * @author : flutterdash@qq.com
  * @since : 2020年12月08日 11:36
  */
 @Slf4j
 public class PasswordFilter extends AccessControlFilter {
+    // 字符串常量
+    private static final String TOKEN_KEY_PREFIX = "TOKEN_KEY_";
 
+    // 由使用者注入依赖
     private boolean isEncryptPassword;
     private StringRedisTemplate redisTemplate;
 
@@ -39,11 +41,10 @@ public class PasswordFilter extends AccessControlFilter {
      * @param request 请求
      * @param response 响应
      * @param mappedValue 拦截器参数
-     * @return 用户已登陆，则放行
+     * @return 用户已登陆，则进一步处理；用户未登陆，则放行到登陆注册接口
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        log.info("有新请求");
         Subject subject = getSubject(request, response);
         // 如果其已经登录，再此发送登录请求
         // 拒绝，统一交给 onAccessDenied 处理
@@ -52,14 +53,15 @@ public class PasswordFilter extends AccessControlFilter {
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) {
-        // 判断若为获取登录注册加密动态秘钥请求
+        // 判断若为获取登录注册加密动态秘钥请求，则将密匙写入响应，发给客户端
         if (isPasswordTokenGet(request)) {
             //动态生成秘钥，redis存储秘钥供之后秘钥验证使用，设置有效期5秒用完即丢弃
             String tokenKey = Commons.getRandomStr(16);
             String userKey = Commons.getRandomStr(6);
             try {
-                redisTemplate.opsForValue().set("TOKEN_KEY_" + IpUtils.getIp(WebUtils.toHttp(request))
-                            .toUpperCase() + userKey.toUpperCase(), tokenKey,5, TimeUnit.HOURS);
+                // key=TOKEN_KEY_127.0.0.1UsrKey, value=tokenKey
+                redisTemplate.opsForValue().set(TOKEN_KEY_PREFIX + IpUtils.getIp(request).toUpperCase()
+                        + userKey.toUpperCase(), tokenKey,5, TimeUnit.SECONDS);
                 // 动态秘钥response返回给前端
                 HttpUtils.responseWrite(response, Message.of(StatusCode.ISSUED_TOKEN_KEY_SUCCESS)
                         .addData("tokenKey", tokenKey)
@@ -82,40 +84,54 @@ public class PasswordFilter extends AccessControlFilter {
                 return false;
             }
 
-            Subject subject = getSubject(request,response);
+            Subject subject = getSubject(request, response);
             try {
                 subject.login(authenticationToken);
-                //登录认证成功,进入请求派发json web token url资源内
+                //登录认证成功, 进入请求派发json web token url资源内
                 return true;
             } catch (AuthenticationException e) {
-                log.warn(authenticationToken.getPrincipal()+"::" + e.getMessage());
+                log.warn(authenticationToken.getPrincipal() + "::" + e.getMessage());
                 // 返回response告诉客户端认证失败
                 HttpUtils.responseWrite(response, Message.of(StatusCode.LOGIN_FAIL));
                 return false;
             } catch (Exception e) {
-                log.error(authenticationToken.getPrincipal()+"::认证异常::" + e.getMessage(),e);
+                log.error(authenticationToken.getPrincipal() + "::认证异常::" + e.getMessage(),e);
                 // 返回response告诉客户端认证失败
                 HttpUtils.responseWrite(response, Message.of(StatusCode.LOGIN_FAIL));
                 return false;
             }
         }
+
         // 判断是否为注册请求,若是通过过滤链进入controller注册
         if (isAccountRegisterPost(request)) {
             return true;
         }
+
         // 之后添加对账户的找回等
         // response 告知无效请求
         HttpUtils.responseWrite(response, Message.failure());
         return false;
     }
 
+    /**
+     * 例，当这样的请求则为true:
+     * <code>GET /account/register?tokenKey=get</code>
+     * @param request 注册登陆请求
+     * @return 是否带有参数tokenKey且值为get，并且请求方式为get
+     */
     private boolean isPasswordTokenGet(ServletRequest request) {
         String tokenKey = HttpUtils.getParameter(request, "tokenKey");
         return (request instanceof HttpServletRequest)
-                && "GET".equals(((HttpServletRequest) request).getMethod().toUpperCase())
+                && "GET".equalsIgnoreCase(((HttpServletRequest) request).getMethod())
                 && "get".equals(tokenKey);
     }
 
+    /**
+     * 请求必须含有必要字段，password，timestamp，methodName，appId
+     * 请求方式为POST，methodName为login
+     * @param request 请求
+     * @return 是否符合条件
+     */
     private boolean isPasswordLoginPost(ServletRequest request) {
         Map<String ,String> map = HttpUtils.getRequestBodyMap(request);
         String password = map.get("password");
@@ -123,10 +139,10 @@ public class PasswordFilter extends AccessControlFilter {
         String methodName = map.get("methodName");
         String appId = map.get("appId");
         return (request instanceof HttpServletRequest)
-                && "POST".equals(((HttpServletRequest) request).getMethod().toUpperCase())
-                && null != password
-                && null != timestamp
-                && null != appId
+                && "POST".equalsIgnoreCase(((HttpServletRequest) request).getMethod())
+                && password != null
+                && timestamp != null
+                && appId != null
                 && "login".equals(methodName);
     }
 
@@ -137,10 +153,10 @@ public class PasswordFilter extends AccessControlFilter {
         String methodName = map.get("methodName");
         String password = map.get("password");
         return (request instanceof HttpServletRequest)
-                && "POST".equals(((HttpServletRequest) request).getMethod().toUpperCase())
-                && null != username
-                && null != password
-                && null != uid
+                && "POST".equalsIgnoreCase(((HttpServletRequest) request).getMethod())
+                && username != null
+                && password != null
+                && uid != null
                 && "register".equals(methodName);
     }
 
@@ -149,10 +165,10 @@ public class PasswordFilter extends AccessControlFilter {
         String appId = map.get("appId");
         String timestamp = map.get("timestamp");
         String password = map.get("password");
-        String host = IpUtils.getIp(WebUtils.toHttp(request));
+        String host = IpUtils.getIp(request);
         String userKey = map.get("userKey");
         if (isEncryptPassword) {
-            String tokenKey = redisTemplate.opsForValue().get("TOKEN_KEY_"+host.toUpperCase() + userKey);
+            String tokenKey = redisTemplate.opsForValue().get(TOKEN_KEY_PREFIX + host.toUpperCase() + userKey);
             password = AesUtils.aesDecode(password, tokenKey);
         }
         return new PasswordToken(appId, password, timestamp, host);
