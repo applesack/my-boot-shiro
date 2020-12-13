@@ -55,7 +55,7 @@ public class IpUtils {
         if (!found) {
             ip = request.getRemoteAddr();
         }
-        return ip;
+        return ip.toUpperCase();
     }
 
     // 判断这个ip地址是否是私有的

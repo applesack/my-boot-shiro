@@ -26,12 +26,12 @@ public class PasswordRealm extends AuthorizingRealm {
         return PasswordToken.class;
     }
 
-    @Override
+    @Override // currentUser.isPermitted(String str) 时候被调用
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         return null;
     }
 
-    @Override
+    @Override // currentUser.login(token) 时候被调用
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         if (!(token instanceof PasswordToken)) {
             return null;

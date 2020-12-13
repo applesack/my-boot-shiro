@@ -1,5 +1,6 @@
 package xyz.scootaloo.bootshiro.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -33,10 +34,10 @@ import java.util.concurrent.TimeUnit;
  * @author : flutterdash@qq.com
  * @since : 2020年12月05日 11:38
  */
+@Slf4j
 @RestController
 @RequestMapping("/account")
 public class AccountController extends BaseHttpServ {
-
     // 一些常量
     private static final String APP_ID_STR = "appId";
     private static final String JWT_SESSION_PREFIX = "JWT-SESSION-";
@@ -66,7 +67,7 @@ public class AccountController extends BaseHttpServ {
         String appId = params.get(APP_ID_STR);
         if (appId == null)
             return Message.of(StatusCode.ERROR_JWT);
-        String roles = accountService.loadAccountRole(APP_ID_STR);
+        String roles = accountService.loadAccountRole(appId);
         String jwt = JwtUtils.issueJWT(appId)
                             .id(UUID.randomUUID().toString())
                             .period(REFRESH_PERIOD_TIME >> 1) // 失效时间5小时
@@ -105,7 +106,7 @@ public class AccountController extends BaseHttpServ {
         }
 
         user.setUid(uid);
-        String ipAddress = IpUtils.getIp(request).toUpperCase(); // 获取请求中的ip地址
+        String ipAddress = IpUtils.getIp(request); // 获取请求中的ip地址
 
         if (isEncryptPassword) {
             // 从Redis取出密码传输加密解密秘钥

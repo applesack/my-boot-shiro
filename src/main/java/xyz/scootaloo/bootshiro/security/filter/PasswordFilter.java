@@ -60,7 +60,7 @@ public class PasswordFilter extends AccessControlFilter {
             String userKey = Commons.getRandomStr(6);
             try {
                 // key=TOKEN_KEY_127.0.0.1UsrKey, value=tokenKey
-                redisTemplate.opsForValue().set(TOKEN_KEY_PREFIX + IpUtils.getIp(request).toUpperCase()
+                redisTemplate.opsForValue().set(TOKEN_KEY_PREFIX + IpUtils.getIp(request)
                         + userKey.toUpperCase(), tokenKey,5, TimeUnit.SECONDS);
                 // 动态秘钥response返回给前端
                 HttpUtils.responseWrite(response, Message.of(StatusCode.ISSUED_TOKEN_KEY_SUCCESS)
@@ -95,7 +95,7 @@ public class PasswordFilter extends AccessControlFilter {
                 HttpUtils.responseWrite(response, Message.of(StatusCode.LOGIN_FAIL));
                 return false;
             } catch (Exception e) {
-                log.error(authenticationToken.getPrincipal() + "::认证异常::" + e.getMessage(),e);
+                log.error(authenticationToken.getPrincipal() + "::认证异常::" + e.getMessage(), e);
                 // 返回response告诉客户端认证失败
                 HttpUtils.responseWrite(response, Message.of(StatusCode.LOGIN_FAIL));
                 return false;
@@ -165,10 +165,11 @@ public class PasswordFilter extends AccessControlFilter {
         String appId = map.get("appId");
         String timestamp = map.get("timestamp");
         String password = map.get("password");
-        String host = IpUtils.getIp(request);
         String userKey = map.get("userKey");
+        String host = IpUtils.getIp(request);
+
         if (isEncryptPassword) {
-            String tokenKey = redisTemplate.opsForValue().get(TOKEN_KEY_PREFIX + host.toUpperCase() + userKey);
+            String tokenKey = redisTemplate.opsForValue().get(TOKEN_KEY_PREFIX + host + userKey);
             password = AesUtils.aesDecode(password, tokenKey);
         }
         return new PasswordToken(appId, password, timestamp, host);

@@ -6,10 +6,8 @@ import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import xyz.scootaloo.bootshiro.security.filter.ShiroFilterChainManager;
 import xyz.scootaloo.bootshiro.security.filter.StatelessWebSubjectFactory;
 import xyz.scootaloo.bootshiro.security.realm.AonModularRealmAuthenticator;
@@ -41,7 +39,7 @@ public class ShiroConfig {
         return shiroFilterFactoryBean;
     }
 
-    @Bean
+    @Bean // 安全管理器设置
     public SecurityManager securityManager(RealmManager realmManager) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setAuthenticator(new AonModularRealmAuthenticator());

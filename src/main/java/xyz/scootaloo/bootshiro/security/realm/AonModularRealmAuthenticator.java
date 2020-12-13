@@ -11,6 +11,8 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 /**
+ * 假如系统内有多个realm类，逐个调用这些realm的supports方法，将token传递给支持处理此token的realm类，
+ * 所有的realm类也应该重写getAuthenticationTokenClass方法，不然这里的supports调用的还是默认的实现。
  * @author : flutterdash@qq.com
  * @since : 2020年12月08日 11:15
  */

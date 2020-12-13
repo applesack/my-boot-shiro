@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import xyz.scootaloo.bootshiro.domain.bo.Account;
+import xyz.scootaloo.bootshiro.domain.bo.Role;
 import xyz.scootaloo.bootshiro.domain.po.AuthUser;
 import xyz.scootaloo.bootshiro.mapper.AuthUserMapper;
 
@@ -13,13 +14,13 @@ import xyz.scootaloo.bootshiro.mapper.AuthUserMapper;
  */
 @Service
 public class AccountService {
-
+    // services
     private AuthUserMapper userMapper;
     private UserService userService;
 
     public Account loadAccount(String appId) throws DataAccessException {
         AuthUser user = userMapper.selectByUniqueKey(appId);
-        return user != null ? new Account(user.getUsername(),user.getPassword(),user.getSalt()) : null;
+        return user != null ? new Account(user.getUsername(), user.getPassword(), user.getSalt()) : null;
     }
 
     public boolean isAccountExistByUid(String uid) {
@@ -29,13 +30,11 @@ public class AccountService {
 
     public boolean registerAccount(AuthUser account) throws DataAccessException {
         // 给新用户授权访客角色
-        userService.authorityUserRole(account.getUid(),103);
-
-        return userMapper.insertSelective(account) ==1 ? Boolean.TRUE : Boolean.FALSE;
+        userService.authorityUserRole(account.getUid(), Role.GUEST);
+        return userMapper.insertSelective(account) == 1 ? Boolean.TRUE : Boolean.FALSE;
     }
 
     public String loadAccountRole(String appId) throws DataAccessException {
-
         return userMapper.selectUserRoles(appId);
     }
 
