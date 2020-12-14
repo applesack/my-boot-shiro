@@ -33,8 +33,6 @@ public class ShiroFilterChainManager {
     // 注入一个过滤规则提供者，默认这个过滤规则是从数据库中获取
     private ShiroFilterRulesProvider shiroFilterRulesProvider;
 
-    // 改为用 new 的方式实例化 filter
-
     // 过滤器的依赖
     @Value("${bootshiro.enableEncryptPassword}")
     private boolean isEncryptPassword;

@@ -68,6 +68,11 @@ public class Message {
         return this;
     }
 
+    // 根据表达式的布尔值决定返回的结果
+    public static Message expression(boolean flag) {
+        return flag ? success() : failure();
+    }
+
     // 获取Message实例
     private static Message getInstance() {
         return new Message();

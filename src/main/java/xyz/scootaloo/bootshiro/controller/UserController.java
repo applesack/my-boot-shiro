@@ -60,14 +60,14 @@ public class UserController extends BaseHttpServ {
         Map<String, String> bodyMap = getRequestBody(request);
         String uid = bodyMap.get("uid");
         int roleId = Integer.parseInt(bodyMap.get("roleId"));
-        return userService.authorityUserRole(uid, Role.of(roleId)) ?
-                Message.success() : Message.failure();
+        boolean flag = userService.authorityUserRole(uid, Role.of(roleId));
+        return Message.expression(flag);
     }
 
     @DeleteMapping("/authority/role/{uid}/{roleId}")
     public Message deleteAuthorityUserRole(@PathVariable String uid, @PathVariable Integer roleId) {
-        return userService.deleteAuthorityUserRole(uid, Role.of(roleId)) ?
-                Message.success() : Message.failure();
+        boolean flag = userService.deleteAuthorityUserRole(uid, Role.of(roleId));
+        return Message.expression(flag);
     }
 
     @PostMapping("/exit")

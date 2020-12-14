@@ -21,7 +21,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/log")
-public class LogController {
+public class LogController extends BaseHttpServ {
     // services
     private AccountLogService accountLogService;
     private OperationLogService operationLogService;
