@@ -6,12 +6,14 @@ import xyz.scootaloo.bootshiro.domain.po.AuthOperationLog;
 import java.util.Date;
 
 /**
+ * 创建日志对象的工厂类
  * @author : flutterdash@qq.com
  * @since : 2020年12月07日 11:07
  */
 public class LogObjectFactory {
 
-    public static AuthAccountLog createAccountLog(String userId, String logName, String ip, Short succeed, String message) {
+    public static AuthAccountLog createAccountLog(String userId, String logName, String ip,
+                                                  Short succeed, String message) {
         AuthAccountLog accountLog = new AuthAccountLog();
         accountLog.setUserId(userId);
         accountLog.setLogName(logName);
@@ -22,7 +24,8 @@ public class LogObjectFactory {
         return accountLog;
     }
 
-    public static AuthOperationLog createOperationLog(String userId, String logName, String api, String method, Short succeed, String message) {
+    public static AuthOperationLog createOperationLog(String userId, String logName, String api,
+                                                      String method, Short succeed, String message) {
         AuthOperationLog operationLog = new AuthOperationLog();
         operationLog.setUserId(userId);
         operationLog.setLogName(logName);

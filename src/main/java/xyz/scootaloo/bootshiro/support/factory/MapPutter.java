@@ -15,8 +15,11 @@ import java.util.Map;
  *     MapPutter.<String, Object>put("name", "buck")
  *              .put("age", 17)
  *              .get();}
+ * 需要使用其他Map实现的时候: {@code
+ *     MapPutter.set(new LinkedHashMap())
+ *              .put("age", 17)
+ *              .get();}
  * </pre>
- *
  * @author : flutterdash@qq.com
  * @since : 2020年12月06日 15:16
  */

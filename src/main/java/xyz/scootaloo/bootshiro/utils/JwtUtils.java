@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * jwt工具
@@ -81,7 +82,7 @@ public class JwtUtils {
                 .getBody();
         JwtAccount jwtAccount = new JwtAccount();
         jwtAccount.setTokenId(claims.getId());    // 令牌ID
-        jwtAccount.setAppId(claims.getSubject()); // 客户标识
+        jwtAccount.setAppId(claims.getSubject()); // 客户标识，通常是appId或者是用户名
         jwtAccount.setIssuer(claims.getIssuer()); // 签发者
         jwtAccount.setIssuedAt(claims.getIssuedAt()); // 签发时间
         jwtAccount.setAudience(claims.getAudience()); // 接收方
@@ -156,11 +157,11 @@ public class JwtUtils {
 
     public static class DefaultValueBuilder {
         private final String subject;
-        private String id     = "";
+        private String id     = UUID.randomUUID().toString();
         private String issuer = DEFAULT_ISSUER;
         private Long   period = DEFAULT_PERIOD;
         private String roles  = "";
-        private String permissions = "";
+        private String permissions = null;
         private SignatureAlgorithm algorithm = DEFAULT_ALGORITHM;
 
         public DefaultValueBuilder(String subject) {

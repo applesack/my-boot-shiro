@@ -12,7 +12,7 @@ import java.util.List;
  * @since : 2020年12月06日 10:50
  */
 @Service
-public class OperationService {
+public class OperationLogService {
 
     private AuthOperationLogMapper operationLogMapper;
 

@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 对于用户的操作
  * @author : flutterdash@qq.com
  * @since : 2020年12月05日 15:47
  */
@@ -22,18 +23,22 @@ public class UserService {
     private AuthUserMapper userMapper;
     private AuthUserRoleMapper userRoleMapper;
 
+    // 获取该用户所具有的所有角色
     public String loadAccountRole(String appId) throws DataAccessException {
         return userMapper.selectUserRoles(appId);
     }
 
+    // 获取所有用户
     public List<AuthUser> getUserList() throws DataAccessException {
         return userMapper.selectUserList();
     }
 
+    // 获取持有某一角色的所有用户
     public List<AuthUser> getUserListByRoleId(Role role) throws DataAccessException {
         return userMapper.selectUserListByRoleId(role.getRoleId());
     }
 
+    // 给这个用户授予一个角色，返回是否授予成功
     public boolean authorityUserRole(String uid, Role role) throws DataAccessException {
         AuthUserRole authUserRole = new AuthUserRole();
         authUserRole.setRoleId(role.getRoleId());
@@ -43,6 +48,7 @@ public class UserService {
         return userRoleMapper.insert(authUserRole) == 1 ? Boolean.TRUE : Boolean.FALSE;
     }
 
+    // 删除这个用户的某个角色
     public boolean deleteAuthorityUserRole(String uid, Role role) throws DataAccessException {
         AuthUserRole authUserRole = new AuthUserRole();
         authUserRole.setUserId(uid);
@@ -50,10 +56,12 @@ public class UserService {
         return userRoleMapper.deleteByUniqueKey(authUserRole) == 1 ? Boolean.TRUE : Boolean.FALSE;
     }
 
+    // 根据用户名获取User对象
     public AuthUser getUserByAppId(String appId) throws DataAccessException {
         return userMapper.selectByUniqueKey(appId);
     }
 
+    // 获取不具备某角色的所有用户
     public List<AuthUser> getNotAuthorityUserListByRoleId(Role role) throws DataAccessException {
         return userMapper.selectUserListExtendByRoleId(role.getRoleId());
     }

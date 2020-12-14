@@ -15,7 +15,7 @@ import java.util.Map;
  * <pre class="code">
  * {@code
  *  {
- *      "status" : {
+ *      "meta" : {
  *          "code" : 6666,
  *          "message" : "成功的请求",
  *          "timestamp" : "2020-12-05T13:15:29.046+00:00",
@@ -33,7 +33,6 @@ import java.util.Map;
  */
 @Getter
 public class Message {
-
     // 消息状态
     private StatusCodeObject meta;
     // 消息内容，存储实体交互数据

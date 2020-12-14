@@ -6,7 +6,7 @@ import java.util.Date;
 
 /**
  * 对应数据库中的auth_operation_log数据表
- *
+ * ---------------------------------
  * @author : flutterdash@qq.com
  * @since : 2020年12月04日 9:16
  */

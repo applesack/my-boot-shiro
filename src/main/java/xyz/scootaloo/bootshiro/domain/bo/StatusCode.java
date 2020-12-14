@@ -36,6 +36,8 @@ public enum StatusCode {
     REGISTER_SUCCESS (2002, Boolean.TRUE , "注册用户成功"),
     ACCOUNT_EXIST    (2003, Boolean.FALSE, "账号已存在"),
     REGISTER_FAILURE (2004, Boolean.FALSE, "注册失败"),
+    LOGOUT_ERROR     (2005, Boolean.FALSE, "用户未登陆无法登出"),
+    LOGOUT_SUCCESS   (2006, Boolean.TRUE , "用户登出成功"),
 
     // 服务器错误
     DEFAULT_SERVER_ERROR(3000, Boolean.FALSE, "服务器开小差"),

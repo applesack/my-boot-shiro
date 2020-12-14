@@ -21,6 +21,23 @@ public enum Role {
         this.roleId = roleId;
     }
 
+    /**
+     * 工厂方法，将数字roleId转换成枚举对象
+     * @param roleId 代表角色的数字，参数数据库
+     * @return Role枚举对象
+     */
+    public static Role of(int roleId) {
+        switch (roleId) {
+            case 104: return Role.ANON;
+            case 103: return Role.GUEST;
+            case 102: return Role.USER;
+            case 100: return Role.ADMIN;
+            default:
+                String msg = "输入错误,系统中不存在此roleId代表的角色,{roleId:" + roleId +"}";
+                throw new IllegalArgumentException(msg);
+        }
+    }
+
     // getter
     public int getRoleId() {
         return this.roleId;

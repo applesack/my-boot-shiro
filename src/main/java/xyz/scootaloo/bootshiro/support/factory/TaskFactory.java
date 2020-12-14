@@ -37,10 +37,16 @@ public class TaskFactory {
                         .createAccountLog(userId, "用户注册日志", ip, succeed, message)));
     }
 
+    // 用户登出日志写入任务
+    public static TimerTask logoutLog(String userId, String ip, Short success, String message) {
+        return new TimerTaskImpl(() -> accountLogMapper.insertSelective(LogObjectFactory
+                        .createAccountLog(userId, "用户退出日志", ip, success, message)));
+    }
+
     // 业务日志写入任务
     public static TimerTask businessLog(String userId, String api, String method, Short succeed, String message) {
         return new TimerTaskImpl(() -> operationLogMapper.insertSelective(LogObjectFactory
-                .createOperationLog(userId, "业务操作日志", api, method, succeed, message)));
+                        .createOperationLog(userId, "业务操作日志", api, method, succeed, message)));
     }
 
     public TaskFactory() {

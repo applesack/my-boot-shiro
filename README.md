@@ -21,7 +21,7 @@
 2. 服务端在过滤器中拦截了索要userKey和tokenKey的请求，  
    生成了userKey和tokenKey并把tokenKey存储在`redis`中，然后把这两个信息返回给客户端。
 3. 客户端收到响应，使用tokenKey加密了要注册的密码，并在提交注册请求的时候，把userKey带上。
-4. 服务端中的过滤器收到了注册请求，确定注册请求中包含了注册所需的数据后，放行到controller层，  
+4. 服务端中的过滤器收到了注册请求，确认注册请求中包含了注册所需的数据后，放行到controller层，  
    由controller根据请求中的userKey去redis中查找对应的tokenKey，对客户端提交的密码进行解密，  
    假如这个过程没有出错，则将用户数据写入数据库，并告诉客户端注册成功。
 
@@ -32,16 +32,16 @@
 并且，每个新注册的用户，默认分配一个guest访客角色。
 
 ```text
-伪代码
-step1. client: GET /register?tokenKey=get;
-step2. server: receive request, then
+伪代码 
+client: GET /register?tokenKey=get; 
+server: receive request, then
         generate userKey="QAZWSX", tokenKey="EDCRFVTGB";
         redis.set(userKey, tokenKey);
         return {userKey, tokenKey};
-step3. client: receive response, then
+client: receive response, then
         password=encode(password, tokenKey)
         POST /register request_body={userKey, username, password}
-step4. server: receive request, then
+server: receive request, then
         check(request);
         tokenKey=redis.get(request.userKey);
         password=decode(password, tokenKey);
@@ -56,9 +56,9 @@ over.
 在验证密码是否一致的时候，由于存在salt，所以会把用户提交的密码进行同样的处理，再进行比对。
 
 ```text
-step1,step2,step3. 参考注册流程，此时client已经准备好了用户名和加密的密码，
+一步到三步参考注册流程，此时client已经准备好了用户名和加密的密码，
         还有server传来的userKey，准备发送给server，而server端也在redis中存有userKey对应的tokenKey
-step4. server: receive request, then
+server: receive request, then
         password = decode(password);
         user = database.loadBy(username);
         if user.username == username and user.password == password:

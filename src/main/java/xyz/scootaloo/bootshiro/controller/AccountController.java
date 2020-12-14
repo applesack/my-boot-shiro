@@ -20,7 +20,6 @@ import xyz.scootaloo.bootshiro.utils.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -69,11 +68,8 @@ public class AccountController extends BaseHttpServ {
             return Message.of(StatusCode.ERROR_JWT);
         String roles = accountService.loadAccountRole(appId);
         String jwt = JwtUtils.issueJWT(appId)
-                            .id(UUID.randomUUID().toString())
                             .period(REFRESH_PERIOD_TIME >> 1) // 失效时间5小时
-                            .roles(roles)
-                            .permissions(null)
-                            .create();
+                            .roles(roles).create();
         // 存储在redis中，key=JWT-SESSION-{appId}， value=jwt， 过期时间=10小时
         redisTemplate.opsForValue().set(JWT_SESSION_PREFIX + appId, jwt, REFRESH_PERIOD_TIME, TimeUnit.SECONDS);
         // 获取这个用户
