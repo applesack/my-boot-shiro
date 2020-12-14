@@ -30,6 +30,9 @@ spring:
   cache:
     type: redis
 
+  # banner设置
+  banner:
+    location: classpath:bootshiro.banner
 # mybatis配置
 mybatis:
   # 指向实体类包路径

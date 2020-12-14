@@ -1,0 +1,8 @@
+${AnsiColor.GREEN}oooooooooo.                          .    .oooooo..o oooo         o8o
+`888'   `Y8b                       .o8   d8P'    `Y8 `888         `"'
+ 888     888  .ooooo.   .ooooo.  .o888oo Y88bo.       888 .oo.   oooo  oooo d8b  .ooooo.
+ 888oooo888' d88' `88b d88' `88b   888    `"Y8888o.   888P"Y88b  `888  `888""8P d88' `88b
+ 888    `88b 888   888 888   888   888        `"Y88b  888   888   888   888     888   888
+ 888    .88P 888   888 888   888   888 . oo     .d8P  888   888   888   888     888   888
+o888bood8P'  `Y8bod8P' `Y8bod8P'   "888" 8""88888P'  o888o o888o o888o d888b    `Y8bod8P'
+${AnsiColor.BLUE}::Springboot:: ${spring-boot.version}                                    奥里给，干就完了。
