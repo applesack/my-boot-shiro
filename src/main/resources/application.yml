@@ -33,6 +33,7 @@ spring:
   # banner设置
   banner:
     location: classpath:bootshiro.banner
+
 # mybatis配置
 mybatis:
   # 指向实体类包路径
@@ -55,4 +56,6 @@ pagehelper:
 ########一些应用设置##########
 
 swagger.enable: true
-bootshiro.enableEncryptPassword: true
+bootshiro:
+  version: v0.1
+  enableEncryptPassword: true

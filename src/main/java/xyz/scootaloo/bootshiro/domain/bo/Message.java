@@ -1,5 +1,7 @@
 package xyz.scootaloo.bootshiro.domain.bo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import xyz.scootaloo.bootshiro.domain.dto.StatusCodeObject;
 
@@ -32,10 +34,11 @@ import java.util.Map;
  * @since : 2020年12月05日 16:22
  */
 @Getter
+@ApiModel(description = "统一响应描述")
 public class Message {
-    // 消息状态
+    @ApiModelProperty(value = "表示响应的状态")
     private StatusCodeObject meta;
-    // 消息内容，存储实体交互数据
+    @ApiModelProperty(value = "响应中返回的数据", dataType = "map")
     private Map<String, Object> data = new HashMap<>();
 
     // 默认成功消息

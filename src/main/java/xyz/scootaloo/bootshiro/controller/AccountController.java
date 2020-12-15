@@ -1,9 +1,11 @@
 package xyz.scootaloo.bootshiro.controller;
 
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,6 +36,7 @@ import java.util.concurrent.TimeUnit;
  * @since : 2020年12月05日 11:38
  */
 @Slf4j
+@Api("这个路径下的接口需要请求两次，第一次获取tokenKey和UserKey进行加密，第二次请求才完成功能")
 @RestController
 @RequestMapping("/account")
 public class AccountController extends BaseHttpServ {
@@ -60,6 +63,20 @@ public class AccountController extends BaseHttpServ {
     @Value("${bootshiro.enableEncryptPassword}")
     private boolean isEncryptPassword;
 
+    @ApiOperation(value = "测试接口用", notes = "请求参数为 tokenKey=get, 请求不到controller就会被拦截处理")
+    @GetMapping("/")
+    public Message getTokenKey() {
+        return Message.success();
+    }
+
+    @ApiOperation(value = "用户登陆", notes = "前置请求 GET: /account?tokenKey=get")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "appId", value = "用户名", required = true),
+            @ApiImplicitParam(name = "password", value = "用户密码", required = true),
+            @ApiImplicitParam(name = "userKey", value = "用户标识", required = true),
+            @ApiImplicitParam(name = "timestamp", value = "时间戳", dataType = "long", required = true),
+            @ApiImplicitParam(name = "methodName", value = "请求方法", defaultValue = "login", required = true),
+    })
     @PostMapping("/login")
     public Message accountLogin(HttpServletRequest request) {
         Map<String, String> params = getRequestBody(request);
@@ -83,6 +100,20 @@ public class AccountController extends BaseHttpServ {
                 .addData("user", user);
     }
 
+    @ApiOperation(value = "用户注册", notes = "前置请求 GET: /account?tokenKey=get")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "uid", value = "主用户名", dataType = "string", required = true),
+            @ApiImplicitParam(name = "password", value = "用户密码", dataType = "string", required = true),
+            @ApiImplicitParam(name = "userKey", value = "用户标识", dataType = "string", required = true),
+            @ApiImplicitParam(name = "timestamp", value = "时间戳", dataType = "long", required = true),
+            @ApiImplicitParam(name = "methodName", value = "请求方法", defaultValue = "register", required = true),
+            @ApiImplicitParam(name = "username", value = "昵称", dataType = "string"),
+            @ApiImplicitParam(name = "real_name", value = "真实姓名", dataType = "string"),
+            @ApiImplicitParam(name = "avatar", value = "头像路径", dataType = "string"),
+            @ApiImplicitParam(name = "email", value = "电子邮箱", dataType = "string"),
+            @ApiImplicitParam(name = "sex", value = "性别", dataType = "byte"),
+            @ApiImplicitParam(name = "createWhere", value = "创建位置", dataType = "byte")
+    })
     @PostMapping("/register")
     public Message accountRegister(HttpServletRequest request) {
         Map<String, String> params = getRequestBody(request);
