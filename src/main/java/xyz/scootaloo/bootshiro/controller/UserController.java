@@ -2,6 +2,8 @@ package xyz.scootaloo.bootshiro.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +25,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 管理用户的一些操作
- * crud用户的一些信息
  * @author : flutterdash@qq.com
  * @since : 2020年12月14日 10:10
  */
 @Slf4j
+@Api("用户管理")
 @RestController
 @RequestMapping("/user")
 public class UserController extends BaseHttpServ {
@@ -38,6 +39,7 @@ public class UserController extends BaseHttpServ {
     private TaskManager taskManager;
     private StringRedisTemplate redisTemplate;
 
+    @ApiOperation(value = "获取对应用户角色", notes = "GET根据用户的appId获取对应用户的角色")
     @GetMapping("/role/{appId}")
     public Message getUserRoleList(@PathVariable String appId) {
         String roles = userService.loadAccountRole(appId);
@@ -46,6 +48,7 @@ public class UserController extends BaseHttpServ {
                 .addData("roles", roleSet);
     }
 
+    @ApiOperation(value = "获取用户列表", notes = "GET获取所有注册用户的信息列表")
     @GetMapping("/list/{start}/{limit}")
     public Message getUserList(@PathVariable Integer start, @PathVariable Integer limit) {
         PageHelper.startPage(start, limit);
@@ -55,6 +58,7 @@ public class UserController extends BaseHttpServ {
                 .addData("pageInfo", new PageInfo<>(userList));
     }
 
+    @ApiOperation(value = "给用户授权添加角色")
     @PostMapping("/authority/role")
     public Message authorityUserRole(HttpServletRequest request) {
         Map<String, String> bodyMap = getRequestBody(request);
@@ -64,12 +68,14 @@ public class UserController extends BaseHttpServ {
         return Message.expression(flag);
     }
 
+    @ApiOperation(value = "删除已经授权的用户角色")
     @DeleteMapping("/authority/role/{uid}/{roleId}")
     public Message deleteAuthorityUserRole(@PathVariable String uid, @PathVariable Integer roleId) {
         boolean flag = userService.deleteAuthorityUserRole(uid, Role.of(roleId));
         return Message.expression(flag);
     }
 
+    @ApiOperation(value = "用户登出")
     @PostMapping("/exit")
     public Message accountExit(HttpServletRequest request) {
         SecurityUtils.getSubject().logout();

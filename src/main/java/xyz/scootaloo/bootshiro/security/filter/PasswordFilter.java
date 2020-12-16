@@ -59,7 +59,7 @@ public class PasswordFilter extends AccessControlFilter {
             String tokenKey = Commons.getRandomStr(16);
             String userKey = Commons.getRandomStr(6);
             try {
-                // key=TOKEN_KEY_127.0.0.1UsrKey, value=tokenKey
+                // key=TOKEN_KEY_127.0.0.1${usrKey}, value=${tokenKey}
                 redisTemplate.opsForValue().set(TOKEN_KEY_PREFIX + IpUtils.getIp(request)
                         + userKey.toUpperCase(), tokenKey,5, TimeUnit.SECONDS);
                 // 动态秘钥response返回给前端

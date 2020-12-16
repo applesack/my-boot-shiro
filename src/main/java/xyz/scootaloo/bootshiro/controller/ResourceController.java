@@ -2,6 +2,8 @@ package xyz.scootaloo.bootshiro.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +23,14 @@ import java.util.List;
  * @since : 2020年12月14日 12:55
  */
 @Slf4j
+@Api("管理资源")
 @RestController
 @RequestMapping("/resource")
 public class ResourceController extends BaseHttpServ {
 
     private ResourceService resourceService;
 
+    @ApiOperation(value = "获取用户被授权的菜单", notes = "通过uid获取对应用户被授权的菜单列表,获取完整菜单树形结构")
     @GetMapping("/authorityMenu")
     public Message getAuthorityMenu(HttpServletRequest request) {
         String uid = request.getHeader("appId");
@@ -38,6 +42,7 @@ public class ResourceController extends BaseHttpServ {
                 .addData("menuTree", menuTreeNodes);
     }
 
+    @ApiOperation(value = "获取全部菜单列")
     @GetMapping("/menus")
     public Message getMenus() {
         List<AuthResource> resources = resourceService.getMenus();
@@ -48,24 +53,29 @@ public class ResourceController extends BaseHttpServ {
                 .addData("menuTree", menuTreeNodes);
     }
 
+    @ApiOperation(value = "增加菜单")
     @PostMapping("/menu")
     public Message addMenu(@RequestBody AuthResource menu) {
         boolean flag = resourceService.addMenu(menu);
         return Message.expression(flag);
     }
 
+    @ApiOperation(value = "修改菜单")
     @PutMapping("/menu")
     public Message updateMenu(@RequestBody AuthResource menu) {
         boolean flag = resourceService.modifyMenu(menu);
         return Message.expression(flag);
     }
 
+    @ApiOperation(value = "删除菜单")
     @DeleteMapping("/menu/{menuId}")
     public Message deleteMenuByMenuId(@PathVariable Integer menuId) {
         boolean flag = resourceService.deleteMenuByMenuId(menuId);
         return Message.expression(flag);
     }
 
+    @ApiOperation(value = "获取API list",
+            notes = "需要分页, 根据teamId判断, -1->获取api分类, 0->获取全部api, id->获取对应分类id下的api")
     @GetMapping("/api/{teamId}/{currentPage}/{pageSize}")
     public Message getApiList(@PathVariable Integer teamId,
                               @PathVariable Integer currentPage, @PathVariable Integer pageSize) {
@@ -89,18 +99,21 @@ public class ResourceController extends BaseHttpServ {
                 .addData("data", new PageInfo<>(resources));
     }
 
+    @ApiOperation(value = "增加API")
     @PostMapping("/api")
     public Message addApi(@RequestBody AuthResource api) {
         boolean flag = resourceService.addMenu(api);
         return Message.expression(flag);
     }
 
+    @ApiOperation(value = "修改API")
     @PutMapping("/api")
     public Message updateApi(@RequestBody AuthResource api) {
         boolean flag = resourceService.modifyMenu(api);
         return Message.expression(flag);
     }
 
+    @ApiOperation(value = "删除API", notes = "根据API_ID删除API")
     @DeleteMapping("/api/{apiId}")
     public Message deleteApiByApiId(@PathVariable Integer apiId) {
         boolean flag = resourceService.deleteMenuByMenuId(apiId);

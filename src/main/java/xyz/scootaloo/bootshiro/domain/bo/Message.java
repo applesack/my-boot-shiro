@@ -3,6 +3,7 @@ package xyz.scootaloo.bootshiro.domain.bo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import lombok.ToString;
 import xyz.scootaloo.bootshiro.domain.dto.StatusCodeObject;
 
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import java.util.Map;
  * @since : 2020年12月05日 16:22
  */
 @Getter
+@ToString
 @ApiModel(description = "统一响应描述")
 public class Message {
     @ApiModelProperty(value = "表示响应的状态")
@@ -69,6 +71,9 @@ public class Message {
         if (nData != null)
             this.data = nData;
         return this;
+    }
+
+    public Message() {
     }
 
     // 根据表达式的布尔值决定返回的结果

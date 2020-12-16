@@ -52,6 +52,7 @@ public class PasswordRealm extends AuthorizingRealm {
         }
     }
 
+    // 构造器: 将password匹配器注入，使用自定义的匹配逻辑
     public PasswordRealm(PasswordMatcher passwordMatcher) {
         setCredentialsMatcher(passwordMatcher);
         setAuthenticationTokenClass(PasswordToken.class);

@@ -21,7 +21,6 @@ public abstract class AbstractPathMatchingFilter extends PathMatchingFilter {
 
     /**
      * description 重写URL匹配  加入httpMethod支持
-     *
      * @param path 1
      * @param request 2
      * @return boolean
@@ -58,11 +57,6 @@ public abstract class AbstractPathMatchingFilter extends PathMatchingFilter {
      */
     protected abstract boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object obj) throws Exception;
 
-    protected boolean onAccessDenied(ServletRequest request, ServletResponse response, Object mappedValue)
-            throws Exception {
-        return this.onAccessDenied(request, response);
-    }
-
     /**
      * description denied
      * @return boolean
@@ -73,7 +67,7 @@ public abstract class AbstractPathMatchingFilter extends PathMatchingFilter {
     @Override
     public boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
         return this.isAccessAllowed(request, response, mappedValue) ||
-                this.onAccessDenied(request, response, mappedValue);
+                this.onAccessDenied(request, response);
     }
 
     protected void saveRequest(ServletRequest request) {

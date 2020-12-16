@@ -69,4 +69,9 @@ public class StringUtils extends org.springframework.util.StringUtils {
     private StringUtils() {
     }
 
+    public static void main(String[] args) {
+        String path = "/account==";
+        System.out.println(splitBy(path, '='));
+    }
+
 }

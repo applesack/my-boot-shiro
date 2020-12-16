@@ -3,16 +3,20 @@
 **以`bootshiro`为模板，做为学习`shiro`框架的参考。**  
 **对原项目的一些部分做了改造和重写。**
 
-## **1.基本信息**
+## **基本信息**
 
 基于`shiro`实现的web权限管理系统。
 - 开发环境: jdk8+, maven, mysql, redis
 - 主要技术栈: springboot, springmvc, mybatis, shiro
 
-## **2.功能的实现**
+## **一些功能实现的细节**
 
-整个项目只有5个controller，总共可请求的路径约20多个，对于其中一些主要的功能写一些个人的理解。
-所有的权限管理按照bootshiro中的过滤器来分有两种，一种负责过滤登陆注册请求，另外一种验证jwt的有效性。
+整个项目只有5个可供请求的controller，其中4个用于给前端页面提供信息，真正处理权限逻辑的主要有这么几个类。
+- AccountController，负责用户注册登陆和jwt签发
+- PasswordFilter，过滤指向账户操作的请求，以及创建tokenKey和userKey
+- BonJwtFilter，过滤其他路径的请求
+
+### *Shiro框架在这个项目中的作用*
 
 ### *2.1注册*
 

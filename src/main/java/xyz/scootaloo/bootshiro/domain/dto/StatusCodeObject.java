@@ -3,6 +3,7 @@ package xyz.scootaloo.bootshiro.domain.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import lombok.ToString;
 import xyz.scootaloo.bootshiro.domain.bo.StatusCode;
 
 import java.sql.Timestamp;
@@ -14,22 +15,26 @@ import java.sql.Timestamp;
  * @since : 2020年12月05日 21:05
  */
 @Getter
+@ToString
 @ApiModel
 public class StatusCodeObject {
     @ApiModelProperty(value = "响应状态码")
-    private final Integer   code;
+    private Integer   code;
     @ApiModelProperty(value = "关于响应结果的提示")
-    private final String    message;
+    private String    message;
     @ApiModelProperty(value = "产生此响应时的时间戳")
-    private final Timestamp timestamp;
+    private Timestamp timestamp;
     @ApiModelProperty(value = "这条响应是否成功", dataType = "boolean")
-    private final boolean   success;
+    private boolean   success;
 
     public StatusCodeObject(StatusCode statusCode) {
         code = statusCode.code();
         message = statusCode.message();
         timestamp = statusCode.timestamp();
         success = statusCode.success();
+    }
+
+    public StatusCodeObject() {
     }
 
 }
