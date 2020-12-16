@@ -20,7 +20,6 @@ import xyz.scootaloo.bootshiro.utils.StringUtils;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -31,12 +30,13 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public class BonJwtFilter extends AbstractPathMatchingFilter {
+    // 字符串常量
     private static final String STR_EXPIRED = "expiredJwt";
     private static final String JWT_SESSION_PREFIX = "JWT-SESSION-";
     private static final String APP_ID = "appId";
     private static final String AUTHORIZATION = "authorization";
     private static final String DEVICE_INFO = "deviceInfo";
-
+    // 手动注入依赖
     private StringRedisTemplate redisTemplate;
     private AccountService accountService;
     private TaskManager taskManager;
@@ -44,16 +44,15 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
     /**
      *
      * @param servletRequest just a request
-     * @param servletResponse just a response
+     * @param response just a response
      * @param mappedValue just a object
      * @return false 拦截; true 进一步处理
      */
     @Override
-    protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse,
+    protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse response,
                                       Object mappedValue) {
         Subject subject = getSubject();
-        HttpServletRequest request = WebUtils.getHttpRequest(servletRequest);
-        HttpServletResponse response = WebUtils.getHttpResponse(servletRequest);
+        HttpServletRequest request = WebUtils.toHttp(servletRequest);
 
         //记录调用api日志到数据库
         taskManager.executeTask(TaskFactory.businessLog(request.getHeader(APP_ID),
@@ -71,7 +70,7 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
             } catch (Exception e) {
                 // 其他错误
                 log.error(IpUtils.getIp(request) + "--JWT认证失败" + e.getMessage(), e);
-                // 告知客户端JWT错误1005,需重新登录申请jwt
+                // 告知客户端, 需重新登录申请jwt
                 HttpUtils.responseWrite(response, Message.of(StatusCode.ERROR_JWT));
                 return false;
             }
@@ -97,7 +96,9 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
     }
 
     private boolean exceptionHandle(AuthenticationException e,
-                                    HttpServletRequest request, HttpServletResponse response) {
+                                    HttpServletRequest request, ServletResponse response) {
+
+
         // 如果是JWT过期
         if (STR_EXPIRED.equals(e.getMessage())) {
             // 这里初始方案先抛出令牌过期，之后设计为在Redis中查询当前appId对应令牌，其设置的过期时间是JWT的两倍，此作为JWT的refresh时间

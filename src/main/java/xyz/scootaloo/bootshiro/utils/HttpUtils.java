@@ -75,16 +75,17 @@ public class HttpUtils {
         if (request.getAttribute(STR_BODY) != null)
             return (Map<String, String>) request.getAttribute(STR_BODY);
 
+        Map<String, String> metaMap = new HashMap<>(16);
         try {
-            Map<String, String> metaMap = new HashMap<>(16);
             Map<String, Object> tmpMap = JSON.parseObject(request.getInputStream(), Map.class);
+            if (tmpMap == null)
+                return metaMap;
             tmpMap.forEach((k, v) -> metaMap.put(k, v.toString()));
             request.setAttribute(STR_BODY, metaMap);
-            return metaMap;
         } catch (IOException ioException) {
             log.debug(ioException.getMessage());
-            return EmptyCollections.STRING_STRING_MAP;
         }
+        return metaMap;
     }
 
     public static String getParameter(ServletRequest request, String key) {

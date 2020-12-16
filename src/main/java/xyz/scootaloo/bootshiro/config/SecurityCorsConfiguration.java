@@ -3,33 +3,31 @@ package xyz.scootaloo.bootshiro.config;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import java.util.Collections;
-
 /**
- * 过滤器注册Bean
- * 允许所有请求通过
+ * 解决跨域问题，参考:
+ * {@link 'https://www.cnblogs.com/yuansc/p/9076604.html'}
  * @author : flutterdash@qq.com
- * @since : 2020年12月14日 21:39
+ * @since : 2020年12月16日 15:25
  */
 @Configuration
-public class SecurityCorsConfig {
+public class SecurityCorsConfiguration {
 
     @Bean
     public FilterRegistrationBean<CorsFilter> corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(Collections.singletonList(CorsConfiguration.ALL));
-        corsConfiguration.setAllowedHeaders(Collections.singletonList(CorsConfiguration.ALL));
-        corsConfiguration.setAllowedMethods(Collections.singletonList(CorsConfiguration.ALL));
-        source.registerCorsConfiguration("/**", corsConfiguration);
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin("null");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config); // CORS 配置对所有接口都有效
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
-        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        bean.setOrder(0);
         return bean;
     }
 
