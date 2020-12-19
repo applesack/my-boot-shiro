@@ -52,6 +52,12 @@ pagehelper:
   supportMethodsArguments: true
   params: count=countSql
 
+# 日志，显示执行的sql语句
+logging:
+  file:
+    name: bootshiro.log
+  level:
+    xyz.scootaloo.bootshiro.mapper: debug
 
 ########一些应用设置##########
 
@@ -59,3 +65,5 @@ swagger.enable: true
 bootshiro:
   version: v0.1
   enableEncryptPassword: true
+
+allow-ip-address: http://localhost:4200,http://localhost:80

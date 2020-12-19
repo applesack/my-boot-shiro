@@ -38,6 +38,8 @@ public class MenuTreeNode extends BaseTreeNode {
         node.setStatus(resource.getStatus());
         node.setCreateTime(resource.getCreateTime());
         node.setUpdateTime(resource.getUpdateTime());
+        node.setParentId(resource.getParentId());
+        node.setId(resource.getId());
         return node;
     }
 

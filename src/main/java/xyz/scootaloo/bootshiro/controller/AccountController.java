@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import xyz.scootaloo.bootshiro.domain.bo.DVal;
 import xyz.scootaloo.bootshiro.domain.bo.Message;
 import xyz.scootaloo.bootshiro.domain.bo.StatusCode;
 import xyz.scootaloo.bootshiro.domain.po.AuthUser;
@@ -41,18 +42,18 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/account")
 public class AccountController extends BaseHttpServ {
     // 一些常量
-    private static final String APP_ID_STR = "appId";
-    private static final String JWT_SESSION_PREFIX = "JWT-SESSION-";
-    private static final String TOKEN_KEY_PREFIX = "TOKEN_KEY_";
-    private static final long REFRESH_PERIOD_TIME = 36000L;
+    private static final String APP_ID_STR = DVal.appId;
+    private static final String JWT_SESSION_PREFIX = DVal.jwtSessionPrefix;
+    private static final String TOKEN_KEY_PREFIX   = DVal.tokenKeyPrefix;
+    private static final long REFRESH_PERIOD_TIME  = DVal.refreshPeriodTime;
     // 字符串常量
-    private static final String USERNAME_STR  = "username";
-    private static final String REAL_NAME_STR = "realName";
-    private static final String AVATAR_STR    = "avatar";
-    private static final String PHONE_STR     = "phone";
-    private static final String EMAIL_STR     = "email";
-    private static final String SEX_STR       = "sex";
-    private static final String WHERE_STR     = "createWhere";
+    private static final String USERNAME_STR  = DVal.username;
+    private static final String REAL_NAME_STR = DVal.realName;
+    private static final String AVATAR_STR    = DVal.avatar;
+    private static final String PHONE_STR     = DVal.phone;
+    private static final String EMAIL_STR     = DVal.email;
+    private static final String SEX_STR       = DVal.sex;
+    private static final String WHERE_STR     = DVal.createWhere;
 
     // services
     private StringRedisTemplate redisTemplate;
@@ -93,8 +94,11 @@ public class AccountController extends BaseHttpServ {
         AuthUser user = userService.getUserByAppId(appId);
         user.setPassword(null);
         user.setSalt(null);
+        String ipAddress = IpUtils.getIp(request);
+
         // 提交写入日志任务，将本次操作的结果写入数据库
-        taskManager.executeTask(TaskFactory.loginLog(appId, IpUtils.getIp(request), (short) 1, "登陆成功"));
+        log.info("登陆成功:" + ipAddress + "=" + user.getUsername());
+        taskManager.executeTask(TaskFactory.loginLog(appId, ipAddress, (short) 1, "登陆成功"));
         return Message.of(StatusCode.ISSUED_JWT_SUCCESS)
                 .addData("jwt", jwt)
                 .addData("user", user);
@@ -160,9 +164,11 @@ public class AccountController extends BaseHttpServ {
 
         if (accountService.registerAccount(user)) {
             taskManager.executeTask(TaskFactory.registerLog(uid, ipAddress, (short) 1, "注册成功"));
+            log.info("注册成功:" + ipAddress + "=" + user.getUsername());
             return Message.of(StatusCode.REGISTER_SUCCESS);
         } else {
             taskManager.executeTask(TaskFactory.registerLog(uid, ipAddress, (short) 0, "注册失败"));
+            log.debug("注册失败:" + ipAddress + "=" + user.getUsername());
             return Message.of(StatusCode.REGISTER_FAILURE);
         }
     }

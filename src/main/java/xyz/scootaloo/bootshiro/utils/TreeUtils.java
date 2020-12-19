@@ -25,7 +25,7 @@ public class TreeUtils {
 
             for (T treeNode : treeNodes) {
                 if (node.getId().equals(treeNode.getParentId())) {
-                    if (node.getChildren()==null) {
+                    if (node.getChildren() == null) {
                         node.setChildren(new ArrayList<>());
                     }
                     node.addChild(treeNode);

@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * 验证权限和返回权限
  * @author : flutterdash@qq.com
  * @since : 2020年12月08日 10:54
  */
@@ -37,7 +38,7 @@ public class JwtRealm extends AuthorizingRealm {
         return JwtToken.class;
     }
 
-    @Override
+    @Override // currentUser.hasRole(roleStr) 时被调用
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         String payload = (String) principals.getPrimaryPrincipal();
         // likely to be json, parse it:
@@ -60,7 +61,7 @@ public class JwtRealm extends AuthorizingRealm {
         return null;
     }
 
-    @Override
+    @Override // currentUser.login(token) 时候被调用
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         if (!(token instanceof JwtToken)) {
             return null;

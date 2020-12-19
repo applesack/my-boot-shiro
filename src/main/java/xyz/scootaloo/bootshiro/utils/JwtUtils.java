@@ -48,7 +48,7 @@ public class JwtUtils {
      * 由于生成jwt所需要的参数比较多，而且一般情况下很多属性都有默认值，
      * 所以这里使用一个Builder来填充这些属性，方法的使用者只需要根据自己的需要设置对应的属性即可。
      * @see DefaultValueBuilder
-     * @see JwtUtils#issueJWT(DefaultValueBuilder)
+     * @see #issueJWT(DefaultValueBuilder)
      * -----------------------------------------------------------------------
      * @param appId 必选项，生成jwt需要一个标识用户的id
      * @return 含有默认值的构建者模式对象

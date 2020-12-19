@@ -6,6 +6,7 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import xyz.scootaloo.bootshiro.domain.bo.DVal;
 import xyz.scootaloo.bootshiro.domain.bo.Message;
 import xyz.scootaloo.bootshiro.domain.bo.StatusCode;
 import xyz.scootaloo.bootshiro.security.token.JwtToken;
@@ -31,11 +32,11 @@ import java.util.stream.Stream;
 @Slf4j
 public class BonJwtFilter extends AbstractPathMatchingFilter {
     // 字符串常量
-    private static final String STR_EXPIRED = "expiredJwt";
-    private static final String JWT_SESSION_PREFIX = "JWT-SESSION-";
-    private static final String APP_ID = "appId";
-    private static final String AUTHORIZATION = "authorization";
-    private static final String DEVICE_INFO = "deviceInfo";
+    private static final String STR_EXPIRED = DVal.expiredJwt;
+    private static final String JWT_SESSION_PREFIX = DVal.jwtSessionPrefix;
+    private static final String APP_ID = DVal.appId;
+    private static final String AUTHORIZATION = DVal.authorization;
+    private static final String DEVICE_INFO = DVal.deviceInfo;
     // 手动注入依赖
     private StringRedisTemplate redisTemplate;
     private AccountService accountService;
@@ -58,7 +59,7 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
         taskManager.executeTask(TaskFactory.businessLog(request.getHeader(APP_ID),
                 request.getRequestURI(), request.getMethod(), (short) 1,null));
 
-        // 判断是否为JWT认证请求
+        // 判断是否为JWT认证请求:  --  用户未认证，并且请求头包含auth和appId
         boolean isJwtPost = subject != null && !subject.isAuthenticated() && isJwtSubmission(request);
         if (isJwtPost) {
             AuthenticationToken token = createJwtToken(request);
@@ -95,10 +96,19 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
         return false;
     }
 
+    /**
+     * 用户进行登陆操作时抛出异常在这里处理
+     * 通常在jwt签发的时候，jwt的有效时间是5个小时，而jwt在redis中存在的时间是10个小时。
+     * 这样一来，当用户在jwt过期后(第5-10小时)访问接口，将会重新生成一个新的5小时有效期的jwt，
+     *      然后在发送给客户端，客户端拿到新的jwt重新请求接口。
+     * 10小时过后，redis中session的数据已经被清除，用户只能重新登陆。
+     * @param e 异常对象
+     * @param request 请求
+     * @param response 响应
+     * @return true通过，false拦截
+     */
     private boolean exceptionHandle(AuthenticationException e,
                                     HttpServletRequest request, ServletResponse response) {
-
-
         // 如果是JWT过期
         if (STR_EXPIRED.equals(e.getMessage())) {
             // 这里初始方案先抛出令牌过期，之后设计为在Redis中查询当前appId对应令牌，其设置的过期时间是JWT的两倍，此作为JWT的refresh时间
@@ -106,15 +116,15 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
             // refresh也过期则告知客户端JWT时间过期重新认证
 
             // 当存储在redis的JWT没有过期，即refresh time 没有过期
-            String appId = request.getHeader("appId");
-            String jwt = request.getHeader("authorization");
+            String appId = request.getHeader(APP_ID);
+            String jwt = request.getHeader(AUTHORIZATION);
             String refreshJwt = redisTemplate.opsForValue().get(JWT_SESSION_PREFIX + appId);
-            if (null != refreshJwt && refreshJwt.equals(jwt)) {
+            if (refreshJwt != null && refreshJwt.equals(jwt)) {
                 // 重新申请新的JWT
                 // 根据appId获取其对应所拥有的角色(这里设计为角色对应资源，没有权限对应资源)
                 String roles = accountService.loadAccountRole(appId);
                 //seconds为单位,10 hours
-                long refreshPeriodTime = 36000L;
+                long refreshPeriodTime = DVal.refreshPeriodTime;
                 String newJwt = JwtUtils.issueJWT(appId)
                         .period(refreshPeriodTime >> 1)
                         .roles(roles)
@@ -157,7 +167,7 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
     }
 
     // 验证当前用户是否属于mappedValue任意一个角色
-    private boolean checkRoles(Subject subject, Object mappedValue){
+    private boolean checkRoles(Subject subject, Object mappedValue) {
         String[] rolesArray = (String[]) mappedValue;
         return rolesArray == null || rolesArray.length == 0
                 || Stream.of(rolesArray).anyMatch(role -> subject.hasRole(role.trim()));
