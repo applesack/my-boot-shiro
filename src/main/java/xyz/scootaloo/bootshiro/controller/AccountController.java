@@ -70,6 +70,16 @@ public class AccountController extends BaseHttpServ {
         return Message.success();
     }
 
+    @GetMapping("/login")
+    public Message loginTokenKey() {
+        return Message.success();
+    }
+
+    @GetMapping("/register")
+    public Message registerTokenKey() {
+        return Message.success();
+    }
+
     @ApiOperation(value = "用户登陆", notes = "前置请求 GET: /account?tokenKey=get")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "appId", value = "用户名", required = true),

@@ -1,15 +1,16 @@
 package xyz.scootaloo.bootshiro.security.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.web.filter.mgt.FilterChainManager;
 import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver;
 import org.apache.shiro.web.util.WebUtils;
+import xyz.scootaloo.bootshiro.security.filter.ShiroFilterChainManager;
+import xyz.scootaloo.bootshiro.utils.StringUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * 用于给每个request分配一个过滤链
@@ -19,71 +20,48 @@ import java.util.Iterator;
  */
 @Slf4j
 public class RestPathMatchingFilterChainResolver extends PathMatchingFilterChainResolver {
-
-    private static final int NUM_2 = 2;
-    private static final String METHOD_SEPARATOR = "==";
+    // 路径分隔符
     private static final String DEFAULT_PATH_SEPARATOR = "/";
 
     public RestPathMatchingFilterChainResolver() {
         super();
     }
 
-    /**
-     * description TODO 重写filterChain匹配
-     * @param servletRequest 1
-     * @param servletResponse 2
-     * @param originalChain 3
-     * @return 配置好的过滤链
-     */
-    @Override
-    public FilterChain getChain(ServletRequest servletRequest, ServletResponse servletResponse,
+    @Override // 给每个request分配一个过滤链
+    public FilterChain getChain(ServletRequest request, ServletResponse response,
                                 FilterChain originalChain) {
-        // 获取过滤链，并将servletReq 转换成 httpReq
-        FilterChainManager filterChainManager = this.getFilterChainManager();
-        HttpServletRequest request = WebUtils.toHttp(servletRequest);
-
-        // 假如没有配置过滤链，则返回null
-        if (!filterChainManager.hasChains())
+        Result result = match(request);
+        if (!result.isFind)
             return null;
+        return getFilterChainManager().proxy(originalChain, result.pattern);
+    }
 
+    /**
+     * getChain()方法的具体实现，实现流程:
+     * <p>遍历所有的资源访问条件，getChainNames()方法返回一个LinkedHashMap集合对象，来自{@link ShiroFilterChainManager#initGetFilterChain()},
+     * 这个集合的元素的格式都是{path}=={method}，其中path使用的是ant的格式，也就是说<code>/account/**</code>和<code>/account/login</code>相匹配，
+     * 这里要做的就是获取这条请求的 路径及方法 对应 的资源描述，确定其可被映射，或者不可被映射。
+     *      假如可被映射，这条请求将被指定的过滤器处理。
+     *      假如不可被映射，这条请求将被直接放行。</p>
+     * @param servletRequest 前端传来的请求
+     * @return 一个结果的包装，这个对象有一个isFind属性。
+     *          假如为true，则表示找到了与这条路径相匹配的过滤条件，此时pattern属性可用。
+     *          假如为false，则表示这是一个没有被记录的资源，不被shiro保护，直接放行到controller层。
+     */
+    private Result match(ServletRequest servletRequest) {
+        HttpServletRequest request = WebUtils.toHttp(servletRequest);
         String uri = this.getPathWithinApplication(request);
         uri = subEnd(uri);
-
-        String pattern;
-        boolean flag;
-        String[] segments;
-        Iterator<String> filterIterator = filterChainManager.getChainNames().iterator();
-
-        // 遍历过滤链，检查每个
-        do {
-            if (!filterIterator.hasNext()) {
-                return null;
+        for (String pattern : getFilterChainManager().getChainNames()) {
+            List<String> segments = StringUtils.splitBy(pattern, '=', 2);
+            if (segments.size() == 2) {
+                if (pathMatches(segments.get(0), uri) && sameMethod(request, segments.get(1)))
+                    return new Result(true, pattern);
+            } else if (segments.size() == 1 && pathMatches(segments.get(0), uri)) {
+                return new Result(true, pattern);
             }
-
-            pattern = filterIterator.next();
-
-            segments = pattern.split(METHOD_SEPARATOR);
-            if (segments.length == NUM_2) {
-                // 分割出url+httpMethod,判断httpMethod和request请求的method是否一致,不一致直接false
-                flag = !request.getMethod().equalsIgnoreCase(segments[1]);
-            } else {
-                flag = false;
-            }
-            pattern = segments[0];
-            if (pattern != null && pattern.endsWith(DEFAULT_PATH_SEPARATOR)) {
-                pattern = pattern.substring(0, pattern.length() - 1);
-            }
-        } while(!this.pathMatches(pattern, uri) || flag);
-
-        if (log.isTraceEnabled()) {
-            log.trace("Matched path pattern [" + pattern + "] for uri [" + uri + "].  Utilizing corresponding filter chain...");
         }
-        if (segments.length == NUM_2) {
-            pattern = pattern.concat(METHOD_SEPARATOR).concat(request.getMethod().toUpperCase());
-        }
-
-        log.info("pattern: " + pattern);
-        return filterChainManager.proxy(originalChain, pattern);
+        return Result.FAIL_RES;
     }
 
     // 假如path以分隔符"/"结尾，则去除这个分隔符并返回
@@ -94,6 +72,26 @@ public class RestPathMatchingFilterChainResolver extends PathMatchingFilterChain
             return path.substring(0, path.length() - 1);
         }
         return path;
+    }
+
+    // 判断一个请求是否是指定的请求方式
+    private boolean sameMethod(HttpServletRequest request, String methodName) {
+        return request.getMethod().equalsIgnoreCase(methodName);
+    }
+
+    // 将处理的结果封装成对象
+    private static class Result {
+
+        private static final Result FAIL_RES = new Result(false, null);
+
+        private final boolean isFind;
+        private final String pattern;
+
+        public Result(boolean isFind, String pattern) {
+            this.isFind = isFind;
+            this.pattern = pattern;
+        }
+
     }
 
 }
