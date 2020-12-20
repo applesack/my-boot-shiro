@@ -1,5 +1,6 @@
 package xyz.scootaloo.bootshiro.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +18,9 @@ import java.util.List;
  * @author : flutterdash@qq.com
  * @since : 2020年12月16日 15:25
  */
+@Slf4j
 @Configuration
-public class SecurityCorsConfiguration {
+public class SecurityCorsConfig {
 
     @Value("${allow-ip-address}")
     private String ipAddresses;
@@ -39,7 +41,9 @@ public class SecurityCorsConfiguration {
     }
 
     public List<String> getIpAddressList() {
-        return StringUtils.splitBy(ipAddresses, ',');
+        List<String> ipAddress = StringUtils.splitBy(ipAddresses, ',');
+        log.info("信任的站点 " + ipAddresses);
+        return ipAddress;
     }
 
 }

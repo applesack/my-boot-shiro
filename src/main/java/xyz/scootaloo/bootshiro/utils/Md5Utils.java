@@ -10,7 +10,7 @@ import java.security.MessageDigest;
  * @since : 2020年12月07日 19:42
  */
 @Slf4j
-public class Md5Utils {
+public abstract class Md5Utils {
 
     public static String md5(String content) {
         // 用于加密的字符

@@ -23,7 +23,7 @@ import java.util.UUID;
  * @author : flutterdash@qq.com
  * @since : 2020年12月06日 14:21
  */
-public class JwtUtils {
+public abstract class JwtUtils {
     // 密钥， json->javaObject， 加密解密器
     public static final String SECRET_KEY = "?::4343fdf4fdf6cvf):";
     private static final ObjectMapper CONVERTER = new ObjectMapper();

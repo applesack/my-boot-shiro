@@ -42,13 +42,7 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
     private AccountService accountService;
     private TaskManager taskManager;
 
-    /**
-     *
-     * @param servletRequest just a request
-     * @param response just a response
-     * @param mappedValue just a object
-     * @return false 拦截; true 进一步处理
-     */
+    // @return false 拦截; true 放行
     @Override
     protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse response,
                                       Object mappedValue) {
@@ -82,13 +76,14 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
         }
     }
 
+    // @return false 拦截; true 放行
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) {
         Subject subject = getSubject();
 
         // 未认证的情况上面已经处理  这里处理未授权
         if (subject != null && subject.isAuthenticated()){
-            //  已经认证但未授权的情况
+            // 已经认证但未授权的情况
             // 告知客户端JWT没有权限访问此资源
             HttpUtils.responseWrite(response, Message.of(StatusCode.NO_PERMISSION));
         }
@@ -166,7 +161,12 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
         return new JwtToken(ipHost, deviceInfo, jwt, appId);
     }
 
-    // 验证当前用户是否属于mappedValue任意一个角色
+    /**
+     * 验证当前用户是否属于mappedValue任意一个角色
+     * @param subject 当前的用户
+     * @param mappedValue 字符串数组 {role1, role2, ...}
+     * @return 当前用户具备任意一个角色即可
+     */
     private boolean checkRoles(Subject subject, Object mappedValue) {
         String[] rolesArray = (String[]) mappedValue;
         return rolesArray == null || rolesArray.length == 0

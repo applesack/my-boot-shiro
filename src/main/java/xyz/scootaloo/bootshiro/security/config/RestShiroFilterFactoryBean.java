@@ -10,6 +10,8 @@ import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.springframework.beans.factory.BeanInitializationException;
 
 /**
+ * 用于创建 shiro 过滤器工厂bean
+ * 此bean中
  * @author : flutterdash@qq.com
  * @since : 2020年12月08日 11:19
  */
@@ -35,7 +37,8 @@ public class RestShiroFilterFactoryBean extends ShiroFilterFactoryBean {
             FilterChainManager manager = this.createFilterChainManager();
             RestPathMatchingFilterChainResolver chainResolver = new RestPathMatchingFilterChainResolver();
             chainResolver.setFilterChainManager(manager);
-            return new RestShiroFilterFactoryBean.SpringShiroFilter((WebSecurityManager) securityManager, chainResolver);
+            return new RestShiroFilterFactoryBean
+                    .SpringShiroFilter((WebSecurityManager) securityManager, chainResolver);
         }
     }
 

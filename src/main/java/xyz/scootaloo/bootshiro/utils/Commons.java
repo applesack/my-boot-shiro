@@ -9,7 +9,7 @@ import java.util.Random;
  * @author : flutterdash@qq.com
  * @since : 2020年12月07日 19:13
  */
-public class Commons {
+public abstract class Commons {
 
     private static final char[] WORDS = "ABCDEFGHIJKLMNOPQRST1234567890".toCharArray();
     private static final int WORD_LEN = WORDS.length;
@@ -22,7 +22,7 @@ public class Commons {
      * @return 随机字符串
      */
     public static String getRandomStr(int len) {
-        Assert.expression(len <= 0, "长度过小");
+        Assert.expression(len >= 0, "长度过小");
         StringBuilder sb = new StringBuilder(len);
         while (len > 0) {
             sb.append(WORDS[random.nextInt(WORD_LEN)]);

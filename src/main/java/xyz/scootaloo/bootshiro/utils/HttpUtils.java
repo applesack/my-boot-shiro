@@ -20,7 +20,7 @@ import java.util.Map;
  * @since : 2020年12月04日 22:17
  */
 @Slf4j
-public class HttpUtils {
+public abstract class HttpUtils {
 
     private static final String JSON_CONTENT_TYPE = "application/json;charset=utf-8";
     private static final String STR_BODY          = "body";

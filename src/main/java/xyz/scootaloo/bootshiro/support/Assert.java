@@ -10,11 +10,11 @@ import xyz.scootaloo.bootshiro.utils.StringUtils;
 public class Assert {
 
     public static void expression(boolean flag) {
-        expression(flag, null);
+        expression(flag, "参数异常");
     }
 
     public static void expression(boolean flag, String message) {
-        if (flag)
+        if (!flag)
             throw new IllegalArgumentException(message);
     }
 

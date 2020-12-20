@@ -66,4 +66,4 @@ bootshiro:
   version: v0.1
   enableEncryptPassword: true
 
-allow-ip-address: http://localhost:4200,http://localhost:80
+allow-ip-address: http://127.0.0.1:4200,http://127.0.0.1:80

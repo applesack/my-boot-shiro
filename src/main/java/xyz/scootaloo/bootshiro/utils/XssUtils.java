@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * @author : flutterdash@qq.com
  * @since : 2020年12月04日 17:04
  */
-public class XssUtils {
+public abstract class XssUtils {
 
     // 脚本过滤链
     private static final List<Pattern> FILTER_CHAIN = getBlackList();

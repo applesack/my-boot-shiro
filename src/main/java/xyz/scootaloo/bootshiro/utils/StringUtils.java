@@ -45,6 +45,47 @@ public abstract class StringUtils extends org.springframework.util.StringUtils {
         return segments;
     }
 
+    public static List<String> splitBy(String line, char separator, int count) {
+        Assert.notNull(line);
+        Assert.expression(count > 0);
+
+        StringBuilder sb = new StringBuilder();
+        StringBuilder tmp = new StringBuilder();
+        List<String> segments = new ArrayList<>(2);
+        int size = line.length();
+        for (int i = 0; i<size; i++) {
+            char c = line.charAt(i);
+            if (c == separator) {
+                int counter = 1;
+                tmp.append(c);
+                for (i++ ; i<size && counter<count; i++) {
+                    if (line.charAt(i) == separator) {
+                        tmp.append(separator);
+                        counter++;
+                    } else {
+                        break;
+                    }
+                }
+
+                i--;
+                if (counter == count) {
+                    segments.add(sb.toString());
+                    tmp.setLength(0);
+                    sb.setLength(0);
+                } else {
+                    sb.append(tmp.toString());
+                    tmp.setLength(0);
+                }
+            } else {
+                sb.append(c);
+            }
+        }
+
+        if (sb.length() > 0)
+            segments.add(sb.toString());
+        return segments;
+    }
+
     public static boolean isStartWithAndEndWith(String line, String prefix, String postfix) {
         Assert.notNull(postfix);
         Assert.notNull(postfix);
@@ -105,10 +146,15 @@ public abstract class StringUtils extends org.springframework.util.StringUtils {
         String path = "/account==";
         System.out.println(splitBy(path, '='));
 
-        String line = "jwt{1}2";
+        String xLine = "jwt{1}2";
         String pre = "jwt{";
         String post = "1}2";
-        System.out.println(isStartWithAndEndWith(line, pre, post));
+        System.out.println(isStartWithAndEndWith(xLine, pre, post));
+
+        String[] lines = {"/account/**==POST", "/account/**===POST", "/account/**=="};
+        for (String line : lines) {
+            System.out.println(line + ": " + splitBy(line, '=', 3));
+        }
     }
 
 }

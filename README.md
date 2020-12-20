@@ -1,11 +1,13 @@
-# **my-boot-shiro**
+# **My-Boot-Shiro**
 
 **以`bootshiro`为模板，做为学习`shiro`框架的参考。**  
 **对原项目的一些部分做了改造和重写。**
 
 ## **基本信息**
 
-基于`shiro`实现的web权限管理系统。
+基于`shiro`实现的web权限管理系统。  
+使用
+
 - 开发环境: jdk8+, maven, mysql, redis
 - 主要技术栈: springboot, springmvc, mybatis, shiro
 

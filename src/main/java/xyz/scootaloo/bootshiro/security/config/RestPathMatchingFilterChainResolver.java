@@ -6,12 +6,14 @@ import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver;
 import org.apache.shiro.web.util.WebUtils;
 
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Iterator;
 
 /**
+ * 用于给每个request分配一个过滤链
+ * 重写getChain()方法后，支持对rest风格的url权限处理
  * @author : flutterdash@qq.com
  * @since : 2020年12月08日 11:21
  */
@@ -19,72 +21,79 @@ import java.util.Iterator;
 public class RestPathMatchingFilterChainResolver extends PathMatchingFilterChainResolver {
 
     private static final int NUM_2 = 2;
+    private static final String METHOD_SEPARATOR = "==";
     private static final String DEFAULT_PATH_SEPARATOR = "/";
 
     public RestPathMatchingFilterChainResolver() {
         super();
     }
 
-    public RestPathMatchingFilterChainResolver(FilterConfig filterConfig) {
-        super(filterConfig);
-    }
-
     /**
      * description TODO 重写filterChain匹配
-     *
-     * @param request 1
-     * @param response 2
+     * @param servletRequest 1
+     * @param servletResponse 2
      * @param originalChain 3
-     * @return javax.servlet.FilterChain
+     * @return 配置好的过滤链
      */
     @Override
-    public FilterChain getChain(ServletRequest request, ServletResponse response, FilterChain originalChain) {
+    public FilterChain getChain(ServletRequest servletRequest, ServletResponse servletResponse,
+                                FilterChain originalChain) {
+        // 获取过滤链，并将servletReq 转换成 httpReq
         FilterChainManager filterChainManager = this.getFilterChainManager();
-        if (!filterChainManager.hasChains()) {
+        HttpServletRequest request = WebUtils.toHttp(servletRequest);
+
+        // 假如没有配置过滤链，则返回null
+        if (!filterChainManager.hasChains())
             return null;
-        } else {
-            String requestURI = this.getPathWithinApplication(request);
-            if (requestURI != null && requestURI.endsWith(DEFAULT_PATH_SEPARATOR)) {
-                requestURI = requestURI.substring(0, requestURI.length() - 1);
-            }
-            Iterator var6 = filterChainManager.getChainNames().iterator();
 
-            String pathPattern;
-            boolean flag = true;
-            String[] strings = null;
-            do {
-                if (!var6.hasNext()) {
-                    return null;
-                }
+        String uri = this.getPathWithinApplication(request);
+        uri = subEnd(uri);
 
-                pathPattern = (String)var6.next();
+        String pattern;
+        boolean flag;
+        String[] segments;
+        Iterator<String> filterIterator = filterChainManager.getChainNames().iterator();
 
-                strings = pathPattern.split("==");
-                if (strings.length == NUM_2) {
-                    // 分割出url+httpMethod,判断httpMethod和request请求的method是否一致,不一致直接false
-                    if (WebUtils.toHttp(request).getMethod().toUpperCase().equals(strings[1].toUpperCase())) {
-                        flag = false;
-                    } else {
-                        flag = true;
-                    }
-                } else {
-                    flag = false;
-                }
-                pathPattern = strings[0];
-                if (pathPattern != null && pathPattern.endsWith(DEFAULT_PATH_SEPARATOR)) {
-                    pathPattern = pathPattern.substring(0, pathPattern.length() -1);
-                }
-            } while(!this.pathMatches(pathPattern, requestURI) || flag);
-
-            if (log.isTraceEnabled()) {
-                log.trace("Matched path pattern [" + pathPattern + "] for requestURI [" + requestURI + "].  Utilizing corresponding filter chain...");
-            }
-            if (strings.length == NUM_2) {
-                pathPattern = pathPattern.concat("==").concat(WebUtils.toHttp(request).getMethod().toUpperCase());
+        // 遍历过滤链，检查每个
+        do {
+            if (!filterIterator.hasNext()) {
+                return null;
             }
 
-            return filterChainManager.proxy(originalChain, pathPattern);
+            pattern = filterIterator.next();
+
+            segments = pattern.split(METHOD_SEPARATOR);
+            if (segments.length == NUM_2) {
+                // 分割出url+httpMethod,判断httpMethod和request请求的method是否一致,不一致直接false
+                flag = !request.getMethod().equalsIgnoreCase(segments[1]);
+            } else {
+                flag = false;
+            }
+            pattern = segments[0];
+            if (pattern != null && pattern.endsWith(DEFAULT_PATH_SEPARATOR)) {
+                pattern = pattern.substring(0, pattern.length() - 1);
+            }
+        } while(!this.pathMatches(pattern, uri) || flag);
+
+        if (log.isTraceEnabled()) {
+            log.trace("Matched path pattern [" + pattern + "] for uri [" + uri + "].  Utilizing corresponding filter chain...");
         }
+        if (segments.length == NUM_2) {
+            pattern = pattern.concat(METHOD_SEPARATOR).concat(request.getMethod().toUpperCase());
+        }
+
+        log.info("pattern: " + pattern);
+        return filterChainManager.proxy(originalChain, pattern);
+    }
+
+    // 假如path以分隔符"/"结尾，则去除这个分隔符并返回
+    private String subEnd(String path) {
+        if (path == null)
+            return null;
+        if (path.endsWith(DEFAULT_PATH_SEPARATOR)) {
+            return path.substring(0, path.length() - 1);
+        }
+        return path;
     }
 
 }

@@ -75,10 +75,10 @@ public class ShiroFilterChainManager {
         final String anonStr = "anon"; // 标记为 anon 的路径会被过滤器忽略
         Map<String,String> filterChain = MapPutter
                             .<String, String>set(new LinkedHashMap<>())
-                // ------------- anon 默认过滤器忽略的URL
+                // --------- anon 默认过滤器忽略的URL
                             .put("/css/**", anonStr)
                             .put("/js/**", anonStr)
-                // ------------- auth 默认需要认证过滤器的URL 走auth--PasswordFilter
+                // --------- auth 默认需要认证过滤器的URL 走auth--PasswordFilter
                             .put("/account/**", "auth")
                             .get();
 
@@ -87,6 +87,11 @@ public class ShiroFilterChainManager {
             List<RolePermRule> rolePermRules = this.shiroFilterRulesProvider.loadRolePermRules();
             if (null != rolePermRules) {
                 rolePermRules.forEach(rule -> {
+                    /* 将数据库中加载的资源权限信息加载入过滤链
+                     * 这里使用了Map.putIfAbsent方法，不会覆盖之前的anon和auth的设置
+                     * key: /uri==MethodName
+                     * value: jwt[role1,role2,...]
+                     */
                     String chain = rule.toFilterChain();
                     if (null != chain) {
                         filterChain.putIfAbsent(rule.getUrl(), chain);

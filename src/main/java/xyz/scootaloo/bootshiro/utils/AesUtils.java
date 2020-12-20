@@ -15,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
  * @since : 2020年12月07日 17:42
  */
 @Slf4j
-public class AesUtils {
+public abstract class AesUtils {
 
     /**
      * ENCODE_RULES : 默认加密密钥

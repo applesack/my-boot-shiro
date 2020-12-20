@@ -11,7 +11,7 @@ import java.util.Map;
  * @author : flutterdash@qq.com
  * @since : 2020年12月14日 14:24
  */
-public class TreeUtils {
+public abstract class TreeUtils {
     // 默认假如一个菜单的parentId是-1的时候，那么这个菜单是根节点
     private static final int BASE_ID = -1;
 

@@ -12,7 +12,7 @@ import java.util.List;
  * @author : flutterdash@qq.com
  * @since : 2020年12月07日 11:37
  */
-public class IpUtils {
+public abstract class IpUtils {
 
     /**
      * ip地址由以字符串表示的时候分为4个部分，每个部分都用小数点分隔
