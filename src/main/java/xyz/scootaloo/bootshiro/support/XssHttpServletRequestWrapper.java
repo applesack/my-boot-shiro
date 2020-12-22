@@ -48,8 +48,8 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public Map<String,String[]> getParameterMap() {
-        Map<String,String[]> primary = super.getParameterMap();
-        Map<String,String[]> result = new HashMap<>(16);
+        Map<String, String[]> primary = super.getParameterMap();
+        Map<String, String[]> result = new HashMap<>(16);
         for (Map.Entry<String, String[]> entry : primary.entrySet()) {
             result.put(entry.getKey(), filterEntryString(entry.getValue()));
         }
@@ -66,7 +66,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
         Cookie[] cookies = super.getCookies();
         if (cookies == null)
             return null;
-        for (Cookie cookie : cookies) {
+        for (var cookie : cookies) {
             cookie.setValue(filterParamString(cookie.getValue()));
         }
         return cookies;

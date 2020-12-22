@@ -9,16 +9,16 @@ import java.util.function.Consumer;
  * @author : flutterdash@qq.com
  * @since : 2020年12月15日 16:40
  */
-public class HttpClientShell extends Shell {
+public class HttpClient extends ConsoleApplication {
 
     private final Scanner scanner = new Scanner(System.in); // 默认输入方式: 键盘录入
     private final Map<String, Consumer<List<String>>> strategyMap; // 策略Map
 
-    public HttpClientShell() throws Exception {
+    public HttpClient() throws Exception {
         this(null);
     }
 
-    public HttpClientShell(List<String> initCmdList) {
+    public HttpClient(List<String> initCmdList) {
         strategyMap = StrategyFactory.register();
         initCmd(initCmdList);
     }

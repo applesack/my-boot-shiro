@@ -73,7 +73,7 @@ public abstract class IpUtils {
         List<String> segments = StringUtils.splitBy(ip, '.');
         if (segments.size() != 4)
             return false;
-        for (String segment : segments) {
+        for (var segment : segments) {
             if (!isBetween0And255(wrapper, segment))
                 return false;
         }
@@ -123,7 +123,7 @@ public abstract class IpUtils {
         public long toLong() {
             int offset = OFFSET;
             long res = 0;
-            for (int segment : segments) {
+            for (var segment : segments) {
                 res += ((long) segment) << offset;
                 offset -= 8;
             }

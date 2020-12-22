@@ -8,7 +8,7 @@ import java.util.List;
  * @author : flutterdash@qq.com
  * @since : 2020年12月15日 16:32
  */
-public abstract class Shell implements Interpreter {
+public abstract class ConsoleApplication implements Interpreter {
 
     protected static final String[] EXIT_COMMANDS = {"exit", "quit"};
 

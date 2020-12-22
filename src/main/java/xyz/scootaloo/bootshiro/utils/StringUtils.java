@@ -45,6 +45,15 @@ public abstract class StringUtils extends org.springframework.util.StringUtils {
         return segments;
     }
 
+    /**
+     * 将字符串按照{count}个分隔符合分割
+     * 假如分隔符为'='，count=2
+     * 则字符串"/account/**==Auto"将被分割成["/account/**","Auto"]
+     * @param line 要被分割的文本
+     * @param separator 分割符
+     * @param count 分隔符的数量
+     * @return 分隔处理后的文本
+     */
     public static List<String> splitBy(String line, char separator, int count) {
         Assert.notNull(line);
         Assert.expression(count > 0);
@@ -120,13 +129,12 @@ public abstract class StringUtils extends org.springframework.util.StringUtils {
         if (!hasLength(text)) {
             return false;
         }
-        int strLen = text.length();
-        for (int i = 0; i < strLen; i++) {
-            if (!Character.isWhitespace(text.charAt(i))) {
-                return true;
-            }
+
+        if (text instanceof String) {
+            return ((String) text).isBlank();
+        } else {
+            return hasText0(text);
         }
-        return false;
     }
 
     /**
@@ -142,6 +150,16 @@ public abstract class StringUtils extends org.springframework.util.StringUtils {
         return str == null || "".equals(str);
     }
 
+    private static boolean hasText0(CharSequence text) {
+        int strLen = text.length();
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(text.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
         String path = "/account==";
         System.out.println(splitBy(path, '='));
@@ -152,7 +170,7 @@ public abstract class StringUtils extends org.springframework.util.StringUtils {
         System.out.println(isStartWithAndEndWith(xLine, pre, post));
 
         String[] lines = {"/account/**==POST", "/account/**===POST", "/account/**=="};
-        for (String line : lines) {
+        for (var line : lines) {
             System.out.println(line + ": " + splitBy(line, '=', 3));
         }
     }

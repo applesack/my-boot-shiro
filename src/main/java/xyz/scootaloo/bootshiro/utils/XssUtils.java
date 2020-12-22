@@ -30,7 +30,7 @@ public abstract class XssUtils {
             return null;
         if (text.equals(""))
             return text;
-        for (Pattern pattern : FILTER_CHAIN) {
+        for (var pattern : FILTER_CHAIN) {
             text = pattern.matcher(text).replaceAll("");
         }
         return text;
@@ -93,7 +93,7 @@ public abstract class XssUtils {
                 "3. eval('{'a' = true}')",
                 "4. onload(alert('abc'))"
         };
-        for (String text : texts) {
+        for (var text : texts) {
             System.out.println(stripXss(text));
         }
     }

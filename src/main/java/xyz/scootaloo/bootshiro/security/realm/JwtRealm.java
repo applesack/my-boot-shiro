@@ -48,7 +48,7 @@ public class JwtRealm extends AuthorizingRealm {
             Map<String, Object> payloadMap = JwtUtils.readValue(payload.substring(4));
             Set<String> roles = StringUtils.splitAndToSet((String) payloadMap.get("roles"), ',');
             Set<String> permissions = StringUtils.splitAndToSet((String) payloadMap.get("perms"), ',');
-            SimpleAuthorizationInfo info =  new SimpleAuthorizationInfo();
+            SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
             if (!roles.isEmpty()) {
                 info.setRoles(roles);

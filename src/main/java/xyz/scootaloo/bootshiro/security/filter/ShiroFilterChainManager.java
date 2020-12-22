@@ -67,6 +67,7 @@ public class ShiroFilterChainManager {
                 .put("jwt", jwtFilter)
                 .get();
     }
+
     /**
      * 初始化获取过滤链规则
      * @return java.util.Map<java.lang.String, java.lang.String>

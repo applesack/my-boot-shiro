@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Primary;
 import java.sql.SQLException;
 
 /**
+ * 数据源配置
  * @author : flutterdash@qq.com
  * @since : 2020年12月15日 14:14
  */

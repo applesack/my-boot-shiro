@@ -1,6 +1,6 @@
 package xyz.scootaloo.bootshiro.support;
 
-import xyz.scootaloo.bootshiro.support.cli.HttpClientShell;
+import xyz.scootaloo.bootshiro.support.cli.HttpClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class SimpleClient {
     }
 
     public static void main(String[] args) throws Exception {
-        new HttpClientShell(initCmd).run();
+        new HttpClient(initCmd).run();
     }
 
 }

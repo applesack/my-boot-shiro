@@ -81,15 +81,14 @@ public class RestPathMatchingFilterChainResolver extends PathMatchingFilterChain
 
     // 将处理的结果封装成对象
     private static class Result {
-
         private static final Result FAIL_RES = new Result(false, null);
 
         private final boolean isFind;
         private final String pattern;
 
         public Result(boolean isFind, String pattern) {
-            this.isFind = isFind;
             this.pattern = pattern;
+            this.isFind = isFind;
         }
 
     }

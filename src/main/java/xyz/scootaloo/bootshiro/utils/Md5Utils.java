@@ -32,7 +32,7 @@ public abstract class Md5Utils {
             int j = md.length;
             char[] str = new char[j*2];
             int k = 0;
-            for (byte byte0 : md) {
+            for (var byte0 : md) {
                 str[k++] = md5String[byte0 >>> 4 & 0xf];
                 str[k++] = md5String[byte0 & 0xf];
             }

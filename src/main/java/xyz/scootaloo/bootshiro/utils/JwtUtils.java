@@ -49,7 +49,7 @@ public abstract class JwtUtils {
      * 所以这里使用一个Builder来填充这些属性，方法的使用者只需要根据自己的需要设置对应的属性即可。
      * @see DefaultValueBuilder
      * @see #issueJWT(DefaultValueBuilder)
-     * -----------------------------------------------------------------------
+     * -----------------------------------
      * @param appId 必选项，生成jwt需要一个标识用户的id
      * @return 含有默认值的构建者模式对象
      */
@@ -73,7 +73,7 @@ public abstract class JwtUtils {
                 .compact();
     }
 
-    public static JwtAccount parseJwt(String jwt, String appKey)
+    public static void parseJwt(String jwt, String appKey)
             throws ExpiredJwtException, UnsupportedJwtException,
                     MalformedJwtException, SignatureException, IllegalArgumentException  {
         Claims claims = Jwts.parser()
@@ -88,7 +88,6 @@ public abstract class JwtUtils {
         jwtAccount.setAudience(claims.getAudience()); // 接收方
         jwtAccount.setRoles(claims.get("roles", String.class)); // 访问主张-角色
         jwtAccount.setPerms(claims.get("perms", String.class)); // 访问主张-权限
-        return jwtAccount;
     }
 
     public static String parseJwtPayload(String jwt) {
@@ -152,17 +151,14 @@ public abstract class JwtUtils {
         return new Date(currentTimeMillis + (period * 1000));
     }
 
-    private JwtUtils() {
-    }
-
     public static class DefaultValueBuilder {
         private final String subject;
         private String id     = UUID.randomUUID().toString();
-        private String issuer = DEFAULT_ISSUER;
         private Long   period = DEFAULT_PERIOD;
         private String roles  = "";
         private String permissions = null;
-        private SignatureAlgorithm algorithm = DEFAULT_ALGORITHM;
+        private final String issuer = DEFAULT_ISSUER;
+        private final SignatureAlgorithm algorithm = DEFAULT_ALGORITHM;
 
         public DefaultValueBuilder(String subject) {
             this.subject = subject == null ? "" : subject;
@@ -170,11 +166,6 @@ public abstract class JwtUtils {
 
         public DefaultValueBuilder id(String id) {
             this.id = id;
-            return this;
-        }
-
-        public DefaultValueBuilder issuer(String issuer) {
-            this.issuer = issuer;
             return this;
         }
 
@@ -190,11 +181,6 @@ public abstract class JwtUtils {
 
         public DefaultValueBuilder roles(String roles) {
             this.roles = roles;
-            return this;
-        }
-
-        public DefaultValueBuilder algorithm(SignatureAlgorithm algorithm) {
-            this.algorithm = algorithm;
             return this;
         }
 
