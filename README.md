@@ -18,9 +18,9 @@
 
 ## 线上演示
 
-- 12
-- 21
-- 32
+-
+- [Swagger文档](http://121.5.60.31:8080/doc.html)
+-
 
 
 
@@ -32,7 +32,7 @@
 
 按照`shiro`中的过滤器划分，所有的资源的权限管理有两种实现方式。
 
-- 一个是关于账户的操作，在系统内会被`PasswordFilter`过滤。由于账户操作在前后端交互过程中，会涉及到一些敏感数据，例如用户密码，为了保证密码的安全性，进行一些加密操作。
+- 一个是关于账户的操作，在系统内会被`PasswordFilter`过滤。由于账户操作在前后端交互过程中，会涉及到一些敏感数据，例如用户密码，为了保证密码的安全性，在表单传输的过程中进行加密操作。
 - 另一个负责过滤其他所有路径的过滤器，由`BonJwtFilter`处理，对于其他的路径，存在权限问题的，这个过滤器将拦截没有指定权限的用户访问某资源，另外管理`jwt`的过期重新签发。
 
 
@@ -44,11 +44,11 @@
 2. 服务端在过滤器中拦截了索要`userKey`和`tokenKey`的请求，  
    生成了`userKey`和`tokenKey`并把`tokenKey`存储在`redis`中，然后把这两个信息返回给客户端，其中
 
-   - `tokenKey`: 随机生成的一个字符串，用于`Aes`加解密。
+    - `tokenKey`: 随机生成的一个字符串，用于`Aes`加解密。
 
-   - `userKey`：是一个6位长度的随机字符串，做为正在执行注册/登陆操作的用户的标识，持有`userKey`则可以表示一个用户，
+    - `userKey`：是一个6位长度的随机字符串，做为正在执行注册/登陆操作的用户的标识，持有`userKey`则可以表示一个用户，
 
-     在`redis`中存储token的key是当前执行此操作的用户的ip，只有ip和`userKey`对上了才可以取出一个用户的数据
+      在`redis`中存储token的key是当前执行此操作的用户的ip，只有ip和`userKey`对上了才可以取出一个用户的数据
 
 3. 客户端收到响应，使用`tokenKey`加密了密码，并在提交注册请求的时候，把`userKey`带上。
 
@@ -118,11 +118,11 @@ server: receive request, then
 
 - `SecurityManager` ==> `DefaultWebSecurityManager`
 
-   - `Authenticator`(认证器): 重写，由原来遍历所有`realm`逐一调用，改为只调用支持此`token`的`realm`
-   - `realms`(领域类)：两个，一个用于处理账号密码，一个用于处理`jwt`
-   - `filter`：两个，分别对应两个`realm`
-   - `matcher`：两个，分别对应两个`realm`
-   - `SessionStorageEvaluator`：设置为不存储`session`
+    - `Authenticator`(认证器): 重写，由原来遍历所有`realm`逐一调用，改为只调用支持此`token`的`realm`
+    - `realms`(领域类)：两个，一个用于处理账号密码，一个用于处理`jwt`
+    - `filter`：两个，分别对应两个`realm`
+    - `matcher`：两个，分别对应两个`realm`
+    - `SessionStorageEvaluator`：设置为不存储`session`
 
 
 
@@ -136,21 +136,21 @@ server: receive request, then
 
 3. 过滤链开始工作，处理请求。对于一个路径，可以有多个过滤器，每个过滤器都会接收一个参数表示当前路径需要具备的权限。过滤器中对当前用户执行`login`操作，然后判断当前用户是否具有权限，其中
 
-   - token: 由过滤器根据当前用户的信息创建
+    - token: 由过滤器根据当前用户的信息创建
 
-   - info: 对当前用户执行`login`后`Shiro`调用对应的`Realm`创建Info
+    - info: 对当前用户执行`login`后`Shiro`调用对应的`Realm`创建Info
 
-   - matcher:  执行`login`后生成的token和info由matcher进行匹配，匹配成功则登陆成功，反之亦然。
+    - matcher:  执行`login`后生成的token和info由matcher进行匹配，匹配成功则登陆成功，反之亦然。
 
 4. 假如步骤3没return false或者没抛异常，则这里就放行到controller层了，用户即可访问资源。
 
 > 如何实现`RESTFul`风格的资源权限管理？
 
-`RestFul`要求一个资源可以有多种请求方式，在这个项目中，请求资源所需要具备的条件都存储在数据库中，这样的一行记录包括资源路径(`ant`风格，支持通配符)，请求方法，需要的角色等。其中路径进行加工就变成了例如`/account/**==POST`这样的格式，假如这条记录的访问要求角色是`Anon`，则表示访问`/account/`下的路径使用`POST`方式不需要任何角色，使用这种方式实现了对路径的权限管理每种方式都可以有不同的规则。
+`RestFul`要求一个资源可以有多种请求方式，在这个项目中，请求资源所需要具备的条件都存储在数据库中，这样的一行记录包括资源路径(`ant`风格，支持通配符)，请求方法，需要的角色等。其中资源进行加工就变成了例如`/account/**==POST`这样的格式，假如这条记录的访问要求角色是`Anon`，则表示访问`/account/`下的路径使用`POST`方式不需要任何角色，使用这种方式实现了对路径的权限管理每种方式都可以有不同的规则。
 
 另外，这个项目重写了`PathMatchingFilterChainResolver`类的`getChain`方法，对于上面的思路给予代码实现
 
-1. `Shiro`每收到一个请求时，就会调用`getChain`方法，这条请求映射到对应的过滤链上
+1. `Shiro`每收到一个请求时，就会调用`getChain`方法，将这条请求映射到对应的过滤链上
 2. 这个方法首先获取请求的`uri`，然后遍历项目中的所有资源访问条件(这些访问条件就是上文提到了数据库中的内容，在项目启动时就会将数据库中的记录保存到集合)，找到与这条请求的`uri`相匹配的访问条件(路径和请求方法都和访问条件对上)，假如找到了这个访问条件，则将这条请求映射到之前配置好的过滤链，假如没有，就直接放行，所以假如数据库中没有记录某条资源的信息，那么这个资源就不能被`Shiro`保护。
 
 虽然没看`Shiro`的源码，但是从`debug`的经验来说，能大致推测`Shiro`的运行原理。刚开始上手的时候有几个容易弄混的概念。
@@ -174,14 +174,14 @@ shiro.setFilterChains(chainsMap)
 request = "/account/login", method=POST
 # 重写了shiro的getChain方法中获取这条请求对应的访问规则的实现，实现逻辑为
 for pattern in shiro.getChains:
-	if match(pattern, request.uri):
-		# 这条请求最终与"/account/**==POST"这个规则匹配
-		chain = chainsMap.get(pattren)
-		# 这个规则对应的资源的权限是"auth"，与之对应的是passwordFilter
-		filter = filtersMap.get(chain.key)
-		# passwordFilter处理了这个请求，同时把这个过滤规则需要的权限一同交给这个过滤器
-		filter.isAccessAllowed(request, chain.value)
-		return
+    if match(pattern, request.uri):
+        # 这条请求最终与"/account/**==POST"这个规则匹配
+        chain = chainsMap.get(pattren)
+        # 这个规则对应的资源的权限是"auth"，与之对应的是passwordFilter
+        filter = filtersMap.get(chain.key)
+        # passwordFilter处理了这个请求，同时把这个过滤规则需要的权限一同交给这个过滤器
+        filter.isAccessAllowed(request, chain.value)
+        return
 
 # 现在又来的一个请求
 request = "/user/info", method=GET
@@ -204,9 +204,46 @@ request = "/non", method=PUT
 
 ## 部署
 
+目前部署这个项目采用的方式的使用`docker`，另外使用的是`docker`的`Dockerfile`功能，外部依赖不是很多，部署也不是很困难(并不)
+
+准备工作
+
+- 一个`liunx`服务器
+- 安装`vsftpd`和`docker`，只说一下大致流程，具体的细节百度上都有
+- 项目打包好的`jar`包，还有一个写好的`Dockerfile`
+
+连接上服务器后习惯将一些比较长比较重要的命令保存起来，下次用的时候直接粘贴或者小改一下，比较方便。这个项目主要依赖两个中间件，`redis`和`mysql`，将这两个中间件的镜像拉取下来，然后运行这两个镜像生成容器，运行命令稍微需要注意一下，因为`mysql`中存储的数据比较重要，所以不应该将数据留在容器中，通常的做法是将`mysql`的容器存储数据的路径与宿主机器的路径做一个映射，这样当容器重新启动或者重做容器数据不会丢失，假如`redis`需要做持久化也可以做这个操作。
+
+- ```bash
+  docker pull mysql:latest
+  ```
+
+- ```bash
+  docker pull redis:latest
+  ```
+
+- ```bash
+  docker run -itd --name redis -p 7373:6379 redis
+  ```
+
+- ```bash
+  docker run --name mysql -p4406:3306 -v /data/bootshiro/mysql:/var/lib/mysql -e MYSQL_ROOT_PASSWORD={password} -d mysql
+  ```
+
+数据库准备好后，本地连接上远程服务器，把`sql`文件运行到数据库中，至此中间件算是准备好了。
 
 
 
+然后是项目的源码，已经打包成`jar`包了，在`IDEA`或者`VsCode`中有`docker`的插件，可以直接把`Dockerfile`部署到远程服务器，这个提前需要在服务器的`docker`的服务文件中更改设置启用远程登陆。但是用插件的方式部署经常遇见各种棘手的问题，对于我这种初学者，我的解决方案是把写好的`Dockerfile`和`jar`包一同用`ftp`传到服务器上，在服务器上执行构建镜像的命令(这两个文件都在当前目录下)。
 
+- ```bash
+  docker build -t bootshiro .
+  ```
 
+这条命令会生成一个名为`bootshiro`的镜像，可以用`docker images`查看到，接下来运行这个镜像，命令:
 
+- ```
+  docker run -dit --name bootshiro --restart=always -p 8080:8080 -v /data/bootshiro/bootshiro/:/data/bootshiro bootshiro
+  ```
+
+因为这个`jar`包会在同目录产生日志，为了方便管理这些日志，也将存储`jar`包的路径与宿主机器做了映射，在实际部署过程中，我的`Dockerfile`内是没有`ADD`命令将`jar`包加入容器的，因为这个路径，也就是宿主机器的此位置已经有的jar包，这个容器只是在此位置运行`java -jar`的命令，后续假如需要发布更改后的`jar`包，停止并移除这个容器，将新的jar包替换旧的`jar`包后重新运行容器。

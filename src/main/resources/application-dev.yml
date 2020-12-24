@@ -6,3 +6,6 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/usthe?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8
     username: root
     password: admin
+  redis:
+    port: 7373
+    host: 121.5.60.31

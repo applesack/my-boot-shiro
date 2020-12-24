@@ -27,16 +27,16 @@ public enum Role {
      * @return Role枚举对象
      */
     public static Role of(int roleId) {
-        return switch (roleId) {
-            case 104 -> Role.ANON;
-            case 103 -> Role.GUEST;
-            case 102 -> Role.USER;
-            case 100 -> Role.ADMIN;
-            default -> {
+        switch (roleId) {
+            case 104: return Role.ANON;
+            case 103: return Role.GUEST;
+            case 102: return Role.USER;
+            case 100: return Role.ADMIN;
+            default: {
                 String msg = "输入错误,系统中不存在此roleId代表的角色,{roleId:" + roleId +"}";
                 throw new IllegalArgumentException(msg);
             }
-        };
+        }
     }
 
     // getter
