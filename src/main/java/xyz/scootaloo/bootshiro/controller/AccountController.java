@@ -1,10 +1,12 @@
 package xyz.scootaloo.bootshiro.controller;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +25,6 @@ import xyz.scootaloo.bootshiro.utils.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 管理账户的登陆和注册
@@ -43,8 +44,6 @@ import java.util.concurrent.TimeUnit;
 public class AccountController extends BaseHttpServ {
     // 一些常量
     private static final String APP_ID_STR = DVal.appId;
-    private static final String JWT_SESSION_PREFIX = DVal.jwtSessionPrefix;
-    private static final String TOKEN_KEY_PREFIX   = DVal.tokenKeyPrefix;
     private static final long REFRESH_PERIOD_TIME  = DVal.refreshPeriodTime;
     // 字符串常量
     private static final String USERNAME_STR  = DVal.username;
@@ -56,7 +55,6 @@ public class AccountController extends BaseHttpServ {
     private static final String WHERE_STR     = DVal.createWhere;
 
     // services
-    private StringRedisTemplate redisTemplate;
     private AccountService accountService;
     private UserService userService;
     private TaskManager taskManager;
@@ -99,7 +97,8 @@ public class AccountController extends BaseHttpServ {
                             .period(REFRESH_PERIOD_TIME >> 1) // 失效时间5小时
                             .roles(roles).create();
         // 存储在redis中，key=JWT-SESSION-{appId}， value=jwt， 过期时间=10小时
-        redisTemplate.opsForValue().set(JWT_SESSION_PREFIX + appId, jwt, REFRESH_PERIOD_TIME, TimeUnit.SECONDS);
+        Commons.genJwtSession(appId, jwt);
+
         // 获取这个用户
         AuthUser user = userService.getUserByAppId(appId);
         user.setPassword(null);
@@ -151,8 +150,7 @@ public class AccountController extends BaseHttpServ {
 
         if (isEncryptPassword) {
             // 从Redis取出密码传输加密解密秘钥
-            String tokenKey = redisTemplate.opsForValue()
-                    .get(TOKEN_KEY_PREFIX + ipAddress + userKey);
+            String tokenKey = Commons.getTokenKey(request, userKey);
             password = AesUtils.aesDecode(password, tokenKey);
         }
         // 存储到数据库的密码为 MD5(原密码+盐值)
@@ -193,11 +191,6 @@ public class AccountController extends BaseHttpServ {
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
-    }
-
-    @Autowired
-    public void setRedisTemplate(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
     }
 
     @Autowired

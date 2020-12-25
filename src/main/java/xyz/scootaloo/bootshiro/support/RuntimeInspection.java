@@ -8,6 +8,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * 在项目启动后检查运行环境
  * 主要检查此项目依赖的一些外部的中间件的连接情况
@@ -33,7 +35,7 @@ public class RuntimeInspection implements ApplicationRunner {
 
     private void checkRedis() {
         String key = "testConnection";
-        redisTemplate.opsForValue().set(key, "连接成功");
+        redisTemplate.opsForValue().set(key, "连接成功", 5, TimeUnit.SECONDS);
         String res = redisTemplate.opsForValue().get(key);
         log.info("检查redis环境，"+ redisHost + ":" + redisPort + "，返回值: " + res);
     }

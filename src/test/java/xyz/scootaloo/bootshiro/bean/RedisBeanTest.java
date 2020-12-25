@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import xyz.scootaloo.bootshiro.utils.Commons;
 
 /**
  * @author : flutterdash@qq.com
@@ -18,6 +19,14 @@ public class RedisBeanTest {
     @Test
     public void testBean() {
         System.out.println(redisTemplate);
+    }
+
+    @Test
+    public void testRedisFunc() {
+        String appId = "FAST";
+        Commons.genJwtSession(appId, "1234");
+        String jwt = Commons.getJwtSession(appId);
+        System.out.println(jwt);
     }
 
 }

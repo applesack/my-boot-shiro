@@ -5,7 +5,6 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import xyz.scootaloo.bootshiro.domain.bo.DVal;
 import xyz.scootaloo.bootshiro.domain.bo.Message;
 import xyz.scootaloo.bootshiro.domain.bo.StatusCode;
@@ -13,16 +12,12 @@ import xyz.scootaloo.bootshiro.security.token.JwtToken;
 import xyz.scootaloo.bootshiro.service.AccountService;
 import xyz.scootaloo.bootshiro.support.TaskManager;
 import xyz.scootaloo.bootshiro.support.factory.TaskFactory;
-import xyz.scootaloo.bootshiro.utils.HttpUtils;
-import xyz.scootaloo.bootshiro.utils.IpUtils;
-import xyz.scootaloo.bootshiro.utils.JwtUtils;
-import xyz.scootaloo.bootshiro.utils.StringUtils;
+import xyz.scootaloo.bootshiro.utils.*;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
@@ -33,12 +28,10 @@ import java.util.stream.Stream;
 public class BonJwtFilter extends AbstractPathMatchingFilter {
     // 字符串常量
     private static final String STR_EXPIRED = DVal.expiredJwt;
-    private static final String JWT_SESSION_PREFIX = DVal.jwtSessionPrefix;
     private static final String APP_ID = DVal.appId;
     private static final String AUTHORIZATION = DVal.authorization;
     private static final String DEVICE_INFO = DVal.deviceInfo;
     // 手动注入依赖
-    private StringRedisTemplate redisTemplate;
     private AccountService accountService;
     private TaskManager taskManager;
 
@@ -113,7 +106,7 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
             // 当存储在redis的JWT没有过期，即refresh time 没有过期
             String appId = request.getHeader(APP_ID);
             String jwt = request.getHeader(AUTHORIZATION);
-            String refreshJwt = redisTemplate.opsForValue().get(JWT_SESSION_PREFIX + appId);
+            String refreshJwt = Commons.getJwtSession(appId);
             if (refreshJwt != null && refreshJwt.equals(jwt)) {
                 // 重新申请新的JWT
                 // 根据appId获取其对应所拥有的角色(这里设计为角色对应资源，没有权限对应资源)
@@ -125,8 +118,7 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
                         .roles(roles)
                         .create();
                 // 将签发的JWT存储到Redis： key=JWT-SESSION-{appID}, value={newJwt}
-                redisTemplate.opsForValue()
-                        .set(JWT_SESSION_PREFIX + appId, newJwt, refreshPeriodTime, TimeUnit.SECONDS);
+                Commons.genJwtSession(appId, newJwt);
                 HttpUtils.responseWrite(response, Message.of(StatusCode.NEW_JWT).addData("jwt", newJwt));
             } else {
                 // jwt时间失效过期,jwt refresh time失效 返回jwt过期客户端重新登录
@@ -174,10 +166,6 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
     }
 
     // setter
-
-    public void setRedisTemplate(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     public void setAccountService(AccountService accountService) {
         this.accountService = accountService;

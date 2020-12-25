@@ -5,7 +5,6 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import xyz.scootaloo.bootshiro.domain.bo.Message;
 import xyz.scootaloo.bootshiro.domain.bo.StatusCode;
 import xyz.scootaloo.bootshiro.security.token.PasswordToken;
@@ -18,7 +17,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 做为<code>/account/**</code>这个路径的前置过滤
@@ -29,12 +27,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class PasswordFilter extends AccessControlFilter {
-    // 字符串常量
-    private static final String TOKEN_KEY_PREFIX = "TOKEN_KEY_";
-
     // 由使用者注入依赖
     private boolean isEncryptPassword;
-    private StringRedisTemplate redisTemplate;
 
     /**
      * 是否允许访问
@@ -55,17 +49,12 @@ public class PasswordFilter extends AccessControlFilter {
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) {
         // 判断若为获取登录注册加密动态秘钥请求，则将密匙写入响应，发给客户端
         if (isPasswordTokenGet(request)) {
-            //动态生成秘钥，redis存储秘钥供之后秘钥验证使用，设置有效期5秒用完即丢弃
-            String tokenKey = Commons.getRandomStr(16);
-            String userKey = Commons.getRandomStr(6);
             try {
-                // key=TOKEN_KEY_127.0.0.1${usrKey}, value=${tokenKey}
-                redisTemplate.opsForValue().set(TOKEN_KEY_PREFIX + IpUtils.getIp(request)
-                        + userKey.toUpperCase(), tokenKey,5, TimeUnit.SECONDS);
-                // 动态秘钥response返回给前端
+                // 生成tokenKey并存储到redis, 动态秘钥response返回给前端
+                Commons.SimpleToken simpleToken = Commons.genTokenKey(request);
                 HttpUtils.responseWrite(response, Message.of(StatusCode.ISSUED_TOKEN_KEY_SUCCESS)
-                        .addData("tokenKey", tokenKey)
-                        .addData("userKey", userKey.toUpperCase()));
+                        .addData("tokenKey", simpleToken.tokenKey)
+                        .addData("userKey", simpleToken.userKey));
             } catch (Exception e) {
                 log.warn("签发动态秘钥失败" + e.getMessage(), e);
                 HttpUtils.responseWrite(response, Message.of(StatusCode.ISSUED_TOKEN_KEY_FAIL));
@@ -169,7 +158,7 @@ public class PasswordFilter extends AccessControlFilter {
         String host = IpUtils.getIp(request);
 
         if (isEncryptPassword) {
-            String tokenKey = redisTemplate.opsForValue().get(TOKEN_KEY_PREFIX + host + userKey);
+            String tokenKey = Commons.getTokenKey(request, userKey);
             password = AesUtils.aesDecode(password, tokenKey);
         }
         return new PasswordToken(appId, password, timestamp, host);
@@ -179,10 +168,6 @@ public class PasswordFilter extends AccessControlFilter {
     }
 
     // setter
-
-    public void setRedisTemplate(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     public void setEncryptPassword(boolean flag) {
         this.isEncryptPassword = flag;

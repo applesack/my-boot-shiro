@@ -7,7 +7,6 @@ import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import xyz.scootaloo.bootshiro.security.config.RestPathMatchingFilterChainResolver;
 import xyz.scootaloo.bootshiro.security.provider.ShiroFilterRulesProvider;
@@ -36,7 +35,6 @@ public class ShiroFilterChainManager {
     // 过滤器的依赖
     @Value("${bootshiro.enableEncryptPassword}")
     private boolean isEncryptPassword;
-    private StringRedisTemplate redisTemplate;
     private AccountService accountService;
     private TaskManager taskManager;
 
@@ -54,12 +52,10 @@ public class ShiroFilterChainManager {
     public Map<String, Filter> initGetFilters() {
         // 实例化并设置依赖
         PasswordFilter passwordFilter = new PasswordFilter();
-        passwordFilter.setRedisTemplate(redisTemplate);
         passwordFilter.setEncryptPassword(isEncryptPassword);
 
         BonJwtFilter jwtFilter = new BonJwtFilter();
         jwtFilter.setAccountService(accountService);
-        jwtFilter.setRedisTemplate(redisTemplate);
         jwtFilter.setTaskManager(taskManager);
 
         return MapPutter.set(new LinkedHashMap<String, Filter>())
@@ -136,11 +132,6 @@ public class ShiroFilterChainManager {
     @Autowired
     public void setShiroFilterRulesProvider(ShiroFilterRulesProvider shiroFilterRulesProvider) {
         this.shiroFilterRulesProvider = shiroFilterRulesProvider;
-    }
-
-    @Autowired
-    public void setRedisTemplate(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
     }
 
     @Autowired

@@ -78,6 +78,7 @@ public class JwtRealm extends AuthorizingRealm {
             throw new AuthenticationException("errJwt");
         } catch(Exception e) {
             //令牌无效
+            e.printStackTrace();
             throw new AuthenticationException("errsJwt");
         }
         if (null == payload) {

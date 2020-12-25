@@ -42,6 +42,5 @@ public class PasswordToken implements AuthenticationToken, Serializable {
         this.timestamp = timestamp;
         this.host = host;
         this.password = password;
-
     }
 }

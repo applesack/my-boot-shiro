@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import xyz.scootaloo.bootshiro.domain.bo.Message;
 import xyz.scootaloo.bootshiro.domain.bo.Role;
@@ -16,6 +15,7 @@ import xyz.scootaloo.bootshiro.domain.po.AuthUser;
 import xyz.scootaloo.bootshiro.service.UserService;
 import xyz.scootaloo.bootshiro.support.TaskManager;
 import xyz.scootaloo.bootshiro.support.factory.TaskFactory;
+import xyz.scootaloo.bootshiro.utils.Commons;
 import xyz.scootaloo.bootshiro.utils.IpUtils;
 import xyz.scootaloo.bootshiro.utils.StringUtils;
 
@@ -33,11 +33,9 @@ import java.util.Set;
 @RestController
 @RequestMapping("/user")
 public class UserController extends BaseHttpServ {
-    private static final String JWT_SESSION_PREFIX = "JWT-SESSION-";
-
+    // services
     private UserService userService;
     private TaskManager taskManager;
-    private StringRedisTemplate redisTemplate;
 
     @ApiOperation(value = "获取对应用户角色", notes = "GET根据用户的appId获取对应用户的角色")
     @GetMapping("/role/{appId}")
@@ -84,13 +82,13 @@ public class UserController extends BaseHttpServ {
         if (StringUtils.isEmpty(appId)) {
             return Message.of(StatusCode.LOGOUT_ERROR);
         }
-        String jwt = redisTemplate.opsForValue().get(JWT_SESSION_PREFIX + appId);
+        String jwt = Commons.getJwtSession(appId);
         if (StringUtils.isEmpty(jwt)) {
             return Message.of(StatusCode.LOGOUT_ERROR);
         }
 
         // 将用户数据从缓存中删除，将结果写入日志
-        redisTemplate.opsForValue().getOperations().delete(JWT_SESSION_PREFIX + appId);
+        Commons.delJwtSession(appId);
         taskManager.executeTask(TaskFactory.logoutLog(appId, IpUtils.getIp(request), (short) 1, ""));
         return Message.of(StatusCode.LOGOUT_SUCCESS);
     }
@@ -100,11 +98,6 @@ public class UserController extends BaseHttpServ {
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
-    }
-
-    @Autowired
-    public void setRedisTemplate(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
     }
 
     @Autowired

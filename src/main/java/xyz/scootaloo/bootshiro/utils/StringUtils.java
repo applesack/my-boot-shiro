@@ -131,7 +131,7 @@ public abstract class StringUtils extends org.springframework.util.StringUtils {
         }
 
         if (text instanceof String) {
-            return ((String) text).isBlank();
+            return !((String) text).isBlank();
         } else {
             return hasText0(text);
         }

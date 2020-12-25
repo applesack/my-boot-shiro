@@ -19,16 +19,16 @@ import static java.util.stream.Collectors.toList;
 public class AonModularRealmAuthenticator extends ModularRealmAuthenticator {
 
     @Override
-    protected AuthenticationInfo doAuthenticate(AuthenticationToken authenticationToken)
+    protected AuthenticationInfo doAuthenticate(AuthenticationToken token)
             throws AuthenticationException {
         assertRealmsConfigured();
         List<Realm> realms = this.getRealms()
                 .stream()
-                .filter(realm -> realm.supports(authenticationToken))
+                .filter(realm -> realm.supports(token))
                 .collect(toList());
         return realms.size() == 1 ?
-                this.doSingleRealmAuthentication(realms.iterator().next(), authenticationToken) :
-                this.doMultiRealmAuthentication(realms, authenticationToken);
+                this.doSingleRealmAuthentication(realms.iterator().next(), token) :
+                this.doMultiRealmAuthentication(realms, token);
     }
 
 }
