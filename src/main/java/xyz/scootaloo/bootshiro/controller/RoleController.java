@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.scootaloo.bootshiro.domain.bo.Message;
@@ -24,6 +25,7 @@ import java.util.Map;
  * @author : flutterdash@qq.com
  * @since : 2020年12月14日 18:11
  */
+@Slf4j
 @Api("角色操作")
 @RestController
 @RequestMapping("/role")
@@ -105,6 +107,7 @@ public class RoleController extends BaseHttpServ {
         int roleId = Integer.parseInt(map.get("roleId"));
         int resourceId = Integer.parseInt(map.get("resourceId"));
         boolean flag = roleService.authorityRoleResource(roleId, resourceId);
+        log.info("赋予角色权限" + Role.of(roleId).getInfo() + "==>" + resourceId + ": " + flag);
         filterChainManager.reloadFilterChain();
         return Message.expression(flag);
     }
@@ -113,6 +116,7 @@ public class RoleController extends BaseHttpServ {
     @DeleteMapping("/authority/resource/{roleId}/{resourceId}")
     public Message deleteAuthorityRoleResource(@PathVariable Integer roleId, @PathVariable Integer resourceId ) {
         boolean flag = roleService.deleteAuthorityRoleResource(roleId,resourceId);
+        log.info("移除角色权限" + Role.of(roleId).getInfo() + "==>" + resourceId + ": " + flag);
         filterChainManager.reloadFilterChain();
         return Message.expression(flag);
     }

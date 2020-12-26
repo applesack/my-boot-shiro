@@ -2,13 +2,7 @@ package xyz.scootaloo.bootshiro.security.token;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.realm.AuthorizingRealm;
-import org.apache.shiro.subject.PrincipalCollection;
-import xyz.scootaloo.bootshiro.security.provider.AccountProvider;
 
 import java.io.Serializable;
 

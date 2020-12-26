@@ -9,7 +9,7 @@ import org.springframework.cache.annotation.EnableCaching;
 public class BootShiroApplication {
 
 	/**
-	 * 修改JDK版本为14，对一些地方做了更改
+	 * 修改JDK版本为11，对一些地方做了更改
 	 * {@link "https://blog.csdn.net/m0_38001814/article/details/88831037"}
 	 * @param args 命令行参数
 	 */

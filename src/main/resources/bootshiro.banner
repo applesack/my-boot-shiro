@@ -5,4 +5,4 @@ ${AnsiColor.GREEN}oooooooooo.                          .    .oooooo..o oooo     
  888    `88b 888   888 888   888   888        `"Y88b  888   888   888   888     888   888
  888    .88P 888   888 888   888   888 . oo     .d8P  888   888   888   888     888   888
 o888bood8P'  `Y8bod8P' `Y8bod8P'   "888" 8""88888P'  o888o o888o o888o d888b    `Y8bod8P'
-${AnsiColor.BLUE}::Springboot:: ${spring-boot.version} ${AnsiColor.WHITE}                                           bootshiro version: ${bootshiro.version}
+${AnsiColor.BLUE}::Springboot:: ${spring-boot.version} ${AnsiColor.WHITE}                                    bootshiro version: ${bootshiro.version}

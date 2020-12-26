@@ -27,7 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/resource")
 public class ResourceController extends BaseHttpServ {
-
+    // service
     private ResourceService resourceService;
 
     @ApiOperation(value = "获取用户被授权的菜单", notes = "通过uid获取对应用户被授权的菜单列表,获取完整菜单树形结构")
@@ -37,7 +37,7 @@ public class ResourceController extends BaseHttpServ {
         List<AuthResource> resources = resourceService.getAuthorityMenusByUid(uid);
         List<MenuTreeNode> treeNodes = resourceToNode(resources);
 
-        List<MenuTreeNode> menuTreeNodes = TreeUtils.buildTreeBy2Loop(treeNodes, -1);
+        List<MenuTreeNode> menuTreeNodes = TreeUtils.buildTreeList(treeNodes);
         return Message.success()
                 .addData("menuTree", menuTreeNodes);
     }
@@ -48,7 +48,7 @@ public class ResourceController extends BaseHttpServ {
         List<AuthResource> resources = resourceService.getMenus();
         List<MenuTreeNode> treeNodes = resourceToNode(resources);
 
-        List<MenuTreeNode> menuTreeNodes = TreeUtils.buildTreeBy2Loop(treeNodes,-1);
+        List<MenuTreeNode> menuTreeNodes = TreeUtils.buildTreeList(treeNodes);
         return Message.success()
                 .addData("menuTree", menuTreeNodes);
     }

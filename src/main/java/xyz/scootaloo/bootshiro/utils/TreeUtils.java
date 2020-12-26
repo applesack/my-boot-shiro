@@ -49,7 +49,7 @@ public abstract class TreeUtils {
         List<T> parentNodes = new ArrayList<>(8);
         for (T node : treeNodes) {
             // 假如这个节点是根节点，则插入到父节点集合，同时缓存起来
-            if (node.getId() == BASE_ID) {
+            if (node.getParentId() == BASE_ID) {
                 cache.put(node.getId(), node);
                 parentNodes.add(node);
             } else {

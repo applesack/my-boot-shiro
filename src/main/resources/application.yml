@@ -58,7 +58,9 @@ pagehelper:
   params: count=countSql
 
 # 日志，显示执行的sql语句
+
 logging:
+#  config: classpath:.logback-spring.xml
   file:
     name: bootshiro.log
   level:
