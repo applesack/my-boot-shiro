@@ -18,9 +18,8 @@
 
 ## 线上演示
 
--
+- [前端界面](http://121.5.60.31:4100/)
 - [Swagger文档](http://121.5.60.31:8080/doc.html)
--
 
 
 
@@ -168,12 +167,14 @@ shiro.setFilters(filtersMap)
 # 现在对于“/account/**”和“/user/**”路径有一个访问规则，并且访问规则也注入到了shiro中
 chainsMap.put("/account/**==POST", "auth")
 chainsMap.put("/user/**==GET", "jwt[user]")
-shiro.setFilterChains(chainsMap)
+shiro.setChains(chainsMap)
 
 # 现在有一个请求
 request = "/account/login", method=POST
 # 重写了shiro的getChain方法中获取这条请求对应的访问规则的实现，实现逻辑为
-for pattern in shiro.getChains:
+# 遍历shiro中所有的匹配规则
+for pattern in shiro.getChains():
+    # 找到与当前路径相匹配的访问规则
     if match(pattern, request.uri):
         # 这条请求最终与"/account/**==POST"这个规则匹配
         chain = chainsMap.get(pattren)
